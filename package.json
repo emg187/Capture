@@ -1,0 +1,27 @@
+{
+  "name": "capture",
+  "version": "1.0.0",
+  "description": "multiplayer Capture across devices using firebase",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emg187/capture.git"
+  },
+  "author": "Eric George",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/emg187/capture/issues"
+  },
+  "homepage": "https://github.com/emg187/capture#readme",
+  "devDependencies": {
+    "css-loader": "^2.1.1",
+    "file-loader": "^4.0.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.33.0",
+    "webpack-cli": "^3.3.3"
+  }
+}
