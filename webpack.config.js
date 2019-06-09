@@ -8,6 +8,14 @@ module.exports = {
     path: path.resolve(__dirname, 'public/dist'), 
     publicPath: "dist/"
   }, 
+  devtool: "inline-source-map",
+  devServer: {
+    contentBase: "./public", 
+    port: 3000, 
+    proxy: {
+      "/api": "http://localhost"
+    }
+  },
   module: {
     rules: [
       {

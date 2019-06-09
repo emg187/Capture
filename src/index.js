@@ -1,15 +1,15 @@
-import "./style.css";
-import Icon from "./icon.png";
+import $ from "jquery";
 
 function component() {
     const element = document.createElement('div');
-  
-    element.innerHTML = "Hello World!";
-    element.classList.add("hello");
+    element.innerHTML = "Hello humans!";
 
-    const myIcon = new Image();
-    myIcon.src = Icon;
-    element.appendChild(myIcon);
+    $.ajax({
+      url: "/api/test.php", 
+      success: function(res){
+        console.log(res);
+      }
+    });
   
     return element;
   }
