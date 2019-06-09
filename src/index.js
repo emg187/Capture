@@ -1,18 +1,6 @@
-import $ from "jquery";
+import React from "react";
+import ReactDOM from "react-dom";
 
-function component() {
-    const element = document.createElement('div');
-    element.innerHTML = "Hello humans!";
+import App from "./components/app";
 
-    $.ajax({
-      url: "/api/test.php", 
-      success: function(res){
-        console.log(res);
-      }
-    });
-  
-    return element;
-  }
-  
-  document.body.appendChild(component());
-
+ReactDOM.render(<App/>, document.getElementById("root"));
