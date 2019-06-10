@@ -30,7 +30,7 @@ class Header extends React.Component {
                 <Navbar expand={true}>
                     <Nav className="ml-auto">
                         <NavItem>
-                            <span onClick={this.handleSignOut} className="navLink">Sign Out</span>
+                            <span onClick={this.handleSignOut} className="navLink">{this.props.user.auth ? "Sign Out" : "Sign In"}</span>
                         </NavItem>
                     </Nav>
                 </Navbar>

@@ -1,5 +1,6 @@
 import React from "react";
 import {Link} from "react-router-dom";
+import {connect} from "react-redux";
 
 import {Modal, ModalHeader} from "reactstrap";
 import "./landing.css";
@@ -45,4 +46,5 @@ class Landing extends React.Component {
     }
 }
 
-export default Landing;
+export default connect()(Landing);
+
