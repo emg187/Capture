@@ -8,7 +8,7 @@ import Games from "./games/games";
 import Friendslist from "./friends/friends";
 import HowToPlay from "./howtoplay/howtoplay";
 
-import SignIn from "./signin/signin";
+import Account from "./account/account";
 
 export default ()=>{
     return (
@@ -20,7 +20,7 @@ export default ()=>{
             <Route path="/friends" component={Friendslist}/>
             <Route path="/howtoplay" component={HowToPlay}/>
 
-            <Route path="/signin" component={SignIn}/>
+            <Route path="/account" component={Account}/>
         </div>
     );
 }

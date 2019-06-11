@@ -35,7 +35,7 @@ class Landing extends React.Component {
                 <Link to="/matchmaking">Matchmaking</Link>
                 <Link to="/games">Current Games and Invites</Link>
                 <Link to="/friends">Friends List</Link>
-                <span className="landingStats" onClick={this.openModal}>Your Stats</span>
+                <span onClick={this.openModal} className="landingStats">Your Stats</span>
                 <Link to="/howtoplay">How To Play</Link>
 
                 <Modal isOpen={this.state.modal} className="landingStatsModal">
