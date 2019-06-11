@@ -2,7 +2,7 @@ import React from "react";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 
-import {Modal, ModalHeader} from "reactstrap";
+import StatsModal from "../modals/modals";
 import "./landing.css";
 
 class Landing extends React.Component {
@@ -29,18 +29,19 @@ class Landing extends React.Component {
     }
 
     render(){
+        this.props.dispatch({
+            type: "LANDING"
+        });
         return (
             <div>
                 <h1>This is the landing page component</h1>
                 <Link to="/matchmaking">Matchmaking</Link>
                 <Link to="/games">Current Games and Invites</Link>
                 <Link to="/friends">Friends List</Link>
-                <span className="landingStats" onClick={this.openModal}>Your Stats</span>
+                <span onClick={this.openModal} className="landingStats">Your Stats</span>
                 <Link to="/howtoplay">How To Play</Link>
 
-                <Modal isOpen={this.state.modal} className="landingStatsModal">
-                    <ModalHeader toggle={this.closeModal}>This is the "your stats" modal</ModalHeader>
-                </Modal>
+                <StatsModal isOpen={this.state.modal} toggle={this.closeModal}/>
             </div>
         );
     }

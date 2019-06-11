@@ -8,9 +8,12 @@ class Matchmaking extends React.Component {
     }
 
     render(){
-        if (!this.props.user.auth){
+        this.props.dispatch({
+            type: "MATCHMAKING"
+        });
+        if (!this.props.user){
             return (
-                <Redirect to="/signin"/>
+                <Redirect to="/account"/>
             );
         }
         return (
@@ -21,7 +24,7 @@ class Matchmaking extends React.Component {
 
 function mapStateToProps(state){
     return {
-        user: state.user
+        user: state.user.auth
     };
 }
 

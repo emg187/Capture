@@ -3,7 +3,7 @@ const initialUserState = {
     userName: ""
 };
 const initialUiState = {
-    landing: true
+    current: "landing"
 };
 
 export function userReducer(state, action){
@@ -26,9 +26,17 @@ export function uiReducer(state, action){
     }
     switch(action.type){
         case "LANDING": 
-            return {...state, landing: true};
-        case "NOT_LANDING": 
-            return {...state, landing: false};
+            return {...state, current: "landing"};
+        case "MATCHMAKING": 
+            return {...state, current: "matchmaking"};
+        case "GAMES": 
+            return {...state, current: "games"};
+        case "FRIENDS": 
+            return {...state, currrent: "friends"};
+        case "HOWTOPLAY": 
+            return {...state, current: "howtoplay"};
+        case "ACCOUNT": 
+            return {...state, current: "account"};
         default: 
             return state;
     }
