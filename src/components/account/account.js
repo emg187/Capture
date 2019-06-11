@@ -102,23 +102,40 @@ class Account extends React.Component {
 
     signIn(event){
         event.preventDefault();
-        console.log("username: ", this.state.signInCreds.userName);
-        console.log("password: ", this.state.signInCreds.password);
+        $.ajax({
+            type: "POST",
+            url: "/api/signin.php", 
+            data: {
+                userName: this.state.signInCreds.userName, 
+                password: this.state.signInCreds.password
+            },
+            success: res=>{
+                console.log(res);
+            }
+        });
     }
 
     signUp(event){
         event.preventDefault();
-        console.log("email: ", this.state.signUpCreds.email);
-        console.log("username: ", this.state.signUpCreds.userName);
-        console.log("password: ", this.state.signUpCreds.password);
-        console.log("confirm: ", this.state.signUpCreds.confirm);
+        $.ajax({
+            type: "POST", 
+            url: "/api/signup.php", 
+            data: {
+                email: this.state.signUpCreds.email,
+                userName: this.state.signUpCreds.userName,
+                password: this.state.signUpCreds.password
+            }, 
+            success: res=>{
+                console.log(res);
+            }
+        })
     }
 
     render(){
         this.props.dispatch({
             type: "ACCOUNT"
         });
-        if (!this.state.signUp){
+        if (this.state.signUp){
             return (
                 <SignUpForm email={this.email} userName={this.signUpUsername} 
                 password={this.signUpPassword} confirm={this.confirm} signUp={this.signUp}></SignUpForm>
