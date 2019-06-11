@@ -35,6 +35,8 @@ export function uiReducer(state, action){
             return {...state, currrent: "friends"};
         case "HOWTOPLAY": 
             return {...state, current: "howtoplay"};
+        case "ACCOUNT": 
+            return {...state, current: "account"};
         default: 
             return state;
     }

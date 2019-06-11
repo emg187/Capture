@@ -6,9 +6,12 @@ class Games extends React.Component {
    render(){
        if (!this.props.user.auth){
            return (
-               <Redirect to="/signin"/>
+               <Redirect to="/account"/>
            );
        }
+       this.props.dispatch({
+           type: "GAMES"
+       });
        return (
             <h3>This is the games page component</h3> 
        );

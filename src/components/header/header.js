@@ -6,8 +6,10 @@ import {
     Dropdown, 
     DropdownToggle, 
     DropdownItem, 
-    DropdownMenu
+    DropdownMenu, 
 } from "reactstrap";
+
+import StatsModal from "../modals/stats";
 import "./header.css";
 import {Link, withRouter} from "react-router-dom";
 
@@ -42,19 +44,22 @@ class Header extends React.Component {
         });
     }
 
-    componentWillUnmount(){
-
-    }
-
     render(){
+        if (this.props.page==="account"){
+            return (
+                <h3 className="text-center">Capture</h3>
+            );
+        }
         if (this.props.page==="landing"){
             return (
                 <div>
                     <Nav className="justify-content-end">
                         <NavItem>
-                            <Link to="account">{this.props.user ? "Sign Out" : "Sign In"}</Link>
+                            <Link to="/account">{this.props.user ? "Sign Out" : "Sign In"}</Link>
                         </NavItem>
                     </Nav>
+
+                    <h3 className="text-center">Capture</h3>
                 </div>
             );
         }
@@ -70,16 +75,14 @@ class Header extends React.Component {
                             <DropdownItem><Link to="/matchmaking">{this.props.page==="matchmaking" ? null : "Matchmaking"}</Link></DropdownItem>
                             <DropdownItem><Link to="/games">{this.props.page==="games" ? null : "Games"}</Link></DropdownItem>
                             <DropdownItem><Link to="/friends">{this.props.page==="friends" ? null : "Friends"}</Link></DropdownItem>
-                            <DropdownItem><span onClick={this.openModal} className="headerStats">Your Stats</span></DropdownItem>
+                            <DropdownItem><span onClick={this.openModal}>Your Stats</span></DropdownItem>
                             <DropdownItem><Link to="/howtoplay">{this.props.page==="howtoplay" ? null : "How To Play"}</Link></DropdownItem>
-                            <DropdownItem><Link to="account">{this.props.user ? "Sign Out" : "Sign In"}</Link></DropdownItem>
+                            <DropdownItem><Link to="/account">Sign Out</Link></DropdownItem>
                         </DropdownMenu>
                     </Dropdown>
                 </Nav>
 
-                <Modal isOpen={this.state.modal} className="nonLandingStatsModal">
-                    <ModalHeader toggle={this.closeModal}>This is the "your stats" modal</ModalHeader>
-                </Modal>
+                <StatsModal isOpen={this.state.modal} toggle={this.closeModal}/>
 
                 <h3 className="text-center">Capture</h3>
             </div>

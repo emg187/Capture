@@ -10,18 +10,22 @@ import HowToPlay from "./howtoplay/howtoplay";
 
 import Account from "./account/account";
 
-export default ()=>{
-    return (
-        <div>
-            <Header/>
-            <Route exact path="/" component={Landing}/>
-            <Route path="/matchmaking" component={Matchmaking}/>
-            <Route path="/games" component={Games}/>
-            <Route path="/friends" component={Friendslist}/>
-            <Route path="/howtoplay" component={HowToPlay}/>
-
-            <Route path="/account" component={Account}/>
-        </div>
-    );
+class App extends React.Component {
+    render(){
+        return (
+            <div>
+                <Header/>
+                <Route exact path="/" component={Landing}/>
+                <Route path="/matchmaking" component={Matchmaking}/>
+                <Route path="/games" component={Games}/>
+                <Route path="/friends" component={Friendslist}/>
+                <Route path="/howtoplay" component={HowToPlay}/>
+    
+                <Route path="/account" component={Account}/>
+            </div>
+        );
+    }
 }
+
+export default App;
 

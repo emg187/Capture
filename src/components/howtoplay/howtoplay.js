@@ -1,8 +1,20 @@
 import React from "react";
+import {connect} from "react-redux";
 
-export default ()=>{
-    return (
-        <h1>This is the how to play page component</h1>
-    );
+class HowToPlay extends React.Component {
+    constructor(props){
+        super(props);
+    }
+
+    render(){
+        this.props.dispatch({
+            type: "HOWTOPLAY"
+        });
+        return (
+            <h3>This is the how to play page component</h3>
+        );
+    }
 }
 
+
+export default connect()(HowToPlay);

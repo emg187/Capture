@@ -9,6 +9,9 @@ class Friends extends React.Component {
                 <Redirect to="/signin"/>
             );
         }
+        this.props.dispatch({
+            type: "FRIENDS"
+        });
         return (
             <h3>This is the friends page component</h3>
         );
