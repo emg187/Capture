@@ -2,7 +2,7 @@ import React from "react";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 
-import StatsModal from "../modals/stats";
+import StatsModal from "../modals/modals";
 import "./landing.css";
 
 class Landing extends React.Component {

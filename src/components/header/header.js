@@ -9,7 +9,7 @@ import {
     DropdownMenu, 
 } from "reactstrap";
 
-import StatsModal from "../modals/stats";
+import StatsModal from "../modals/modals";
 import "./header.css";
 import {Link, withRouter} from "react-router-dom";
 
