@@ -125,6 +125,7 @@ class Account extends React.Component {
             success: res=>{
                 res = JSON.parse(res);
                 if (!res.success){
+                    this.setState({confirmError: false});
                     if (res.details==="failed query"){this.setState({serviceError: true, emailError: false, userNameError: false}); return;}
                     else if (res.details==="email taken"){this.setState({serviceError: false, emailError: true, userNameError: false}); return;}
                     else {this.setState({serviceError: false, emailError: false, userNameError: true}); return;}
@@ -166,14 +167,22 @@ class Account extends React.Component {
     }
 
     componentDidMount(){
-        this.props.dispatch({
-            type: "SIGN_OUT"
-        });
+        if (this.props.user){
+            this.props.dispatch({
+                type: "SIGN_OUT"
+            });
+        }
         this.props.dispatch({
             type: "ACCOUNT"
         });    
     }
 }
 
-export default connect()(Account);
+function mapStateToProps(state){
+    return {
+        user: state.user.auth
+    };
+}
+
+export default connect(mapStateToProps)(Account);
 

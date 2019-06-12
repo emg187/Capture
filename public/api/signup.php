@@ -34,7 +34,7 @@ while ($row = mysqli_fetch_assoc($get_users_result)){
 }
 
 $password = encrypt($password);
-$create_user_query = "INSERT INTO `users` (`username`, `hashpassword`, `email`)
+$create_user_query = "INSERT INTO `users` (`username`, `cred`, `email`)
                         VALUES ('$user_name', '$password', '$email')";
 $create_user_result = mysqli_query($conn, $create_user_query);
 

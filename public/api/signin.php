@@ -25,7 +25,7 @@ if (mysqli_num_rows($user_query_result)===0){
 }
 
 $data = mysqli_fetch_assoc($user_query_result);
-if ($data["hashpassword"]===$password){
+if ($data["cred"]===$password){
     $output["success"] = true;
     print(json_encode($output));
     exit;
