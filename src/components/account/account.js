@@ -11,99 +11,67 @@ class Account extends React.Component {
         super(props);
 
         this.state = {
+            signUp: false,
             signInCreds: {
                 userName: "",
                 password: ""
             }, 
+            signInError: false,
             signUpCreds: {
                 email: "", 
                 userName: "", 
                 password: "", 
                 confirm: "", 
-                confirmError: false
-            }
+            }, 
+            emailError: false, 
+            userNameError: false,
+            confirmError: false
         };
-        this.switch = this.switch.bind(this);
-        this.signInUsername = this.signInUsername.bind(this);
-        this.signInPassword = this.signInPassword.bind(this);
-        this.email = this.email.bind(this);
-        this.signUpUsername = this.signUpUsername.bind(this);
-        this.signUpPassword = this.signUpPassword.bind(this);
-        this.confirm = this.confirm.bind(this);
+        this.switchForms = this.switchForms.bind(this);
+        this.signInChange = this.signInChange.bind(this);
+        this.signUpChange = this.signUpChange.bind(this);
         this.signIn = this.signIn.bind(this);
         this.signUp = this.signUp.bind(this);
     }
 
-    switch(){
+    switchForms(){
         this.setState({
             signUp: !this.state.signUp
         });
     }
 
-    signInUsername(event){
-        this.setState({
-            signInCreds: {
-                userName: event.target.value,
-                password: this.state.signInCreds.password
-            }
-        });
+    signInChange(field, value){
+        let stateCopy = {...this.state};
+
+        switch(field){
+            case "userName": 
+                stateCopy.signInCreds.userName = value;
+                break;
+            case "password": 
+                stateCopy.signInCreds.password = value;
+                break;
+        }
+        this.setState({...stateCopy});
     }
 
-    signInPassword(event){
-        this.setState({
-            signInCreds: {
-                userName: this.state.signInCreds.userName,
-                password: event.target.value
-            }
-        });
-    }
+    signUpChange(field, value){
+        let stateCopy = {...this.state};
 
-    email(event){
-        this.setState({
-            signUpCreds: {
-                email: event.target.value,
-                userName: this.state.signUpCreds.userName, 
-                password: this.state.signUpCreds.password, 
-                confirm: this.state.signUpCreds.confirm, 
-                confirmError: false
-            }
-        });
-    }
-
-    signUpUsername(event){
-        this.setState({
-            signUpCreds: {
-                email: this.state.signUpCreds.email,
-                userName: event.target.value, 
-                password: this.state.signUpCreds.password, 
-                confirm: this.state.signUpCreds.confirm, 
-                confirmError: false
-            }
-        });
-    }
-
-    signUpPassword(event){
-        this.setState({
-            signUpCreds: {
-                email: this.state.signUpCreds.email,
-                userName: this.state.signUpCreds.userName, 
-                password: event.target.value, 
-                confirm: this.state.signUpCreds.confirm,
-                confirmError: false
-            }
-        });
-    }
-
-    confirm(event){
-        this.setState({
-            signUpCreds:{
-                email: this.state.signUpCreds.email,
-                userName: this.state.signUpCreds.userName, 
-                password: this.state.signUpCreds.password, 
-                confirm: event.target.value, 
-                confirmError: false
-            }
-        });
+        switch(field){
+            case "email": 
+                stateCopy.signUpCreds.email = value;
+                break;
+            case "userName": 
+                stateCopy.signUpCreds.userName = value;
+                break;
+            case "password": 
+                stateCopy.signUpCreds.password = value;
+                break;
+            case "confirm": 
+                stateCopy.signUpCreds.confirm = value;
+                break;
+        }
+        this.setState({...stateCopy});
     }
 
     signIn(event){
@@ -126,15 +94,9 @@ class Account extends React.Component {
         event.preventDefault();
 
         if (this.state.signUpCreds.password!==this.state.signUpCreds.confirm){
-            this.setState({
-                signUpCreds: {
-                    email: this.state.signUpCreds.email,
-                    userName: this.state.signUpCreds.userName, 
-                    password: this.state.signUpCreds.password, 
-                    confirm: this.state.signUpCreds.confirm, 
-                    confirmError: true
-                }
-            });
+            let stateCopy = {...this.state};
+            stateCopy.confirmError = true;
+            this.setState({...stateCopy});
             return;
         }
 
@@ -153,25 +115,27 @@ class Account extends React.Component {
     }
 
     render(){
-        this.props.dispatch({
-            type: "ACCOUNT"
-        });
         if (this.state.signUp){
             return (
                 <div>
-                    <SignUpForm email={this.email} userName={this.signUpUsername} 
-                    password={this.signUpPassword} confirm={this.confirm} signUp={this.signUp}></SignUpForm>
-                    <div>{this.state.signUpCreds.confirmError ? "Please make sure you confirm the correct password" : null}</div>
-                    <div onClick={this.switch} className="switchLink">Already have an account? Sign in</div>
+                    <SignUpForm input={this.signUpChange} submit={this.signUp}></SignUpForm>
+                    <div>{this.state.confirmError ? "Please make sure you confirm the correct password" : null}</div>
+                    <div onClick={this.switchForms} className="switchLink">Already have an account? Sign in</div>
                 </div>
             );
         }
         return (
             <div>
-                <SignInForm userName={this.signInUsername} password={this.signInPassword} signIn={this.signIn}></SignInForm>
-                <div onClick={this.switch} className="switchLink">Don't have an account? Sign up</div>
+                <SignInForm input={this.signInChange} submit={this.signIn}></SignInForm>
+                <div onClick={this.switchForms} className="switchLink">Don't have an account? Sign up</div>
             </div>
         );
+    }
+
+    componentDidMount(){
+        this.props.dispatch({
+            type: "ACCOUNT"
+        });    
     }
 }
 

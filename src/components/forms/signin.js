@@ -6,19 +6,39 @@ import {
     Input, 
     Button} from "reactstrap";
 
-export default props=>{
-    return (
-        <Form>
-            <FormGroup>
-                <Label>Username</Label>
-                <Input onChange={props.userName}></Input>
-            </FormGroup>
-            <FormGroup>
-                <Label>Password</Label>
-                <Input onChange={props.password}></Input>
-            </FormGroup>
-            <Button onClick={props.signIn}>Submit</Button>
-        </Form>
-    );
+class SignInForm extends React.Component {
+    constructor(props){
+        super(props);
+
+        this.userNameChange = this.userNameChange.bind(this);
+        this.passwordChange = this.passwordChange.bind(this);
+    }
+
+    userNameChange(event){
+        this.props.input("userName", event.target.value);
+    }
+
+    passwordChange(event){
+        this.props.input("password", event.target.value);
+    }
+
+    render(){
+        return (
+            <Form>
+                <FormGroup>
+                    <Label>Username</Label>
+                    <Input onChange={this.userNameChange}></Input>
+                </FormGroup>
+                <FormGroup>
+                    <Label>Password</Label>
+                    <Input onChange={this.passwordChange}></Input>
+                </FormGroup>
+                <Button onClick={this.props.submit}>Submit</Button>
+            </Form>
+        );
+    }
 }
+
+export default SignInForm;
+
 
