@@ -19,7 +19,7 @@ if (!$user_query_result){
     print(json_encode($output));
     exit;
 }
-if (mysqli_num_rows($user_query_result)!==1){
+if (mysqli_num_rows($user_query_result)===0){
     print(json_encode($output));
     exit;
 }

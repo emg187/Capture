@@ -1,10 +1,11 @@
 import React from "react";
 import {connect} from "react-redux";
 import $ from "jquery";
+import {Redirect} from "react-router-dom";
 
-import "./account.css";
 import SignUpForm from "../forms/signup";
 import SignInForm from "../forms/signin";
+import "./account.css";
 
 class Account extends React.Component {
     constructor(props){
@@ -25,7 +26,9 @@ class Account extends React.Component {
             }, 
             emailError: false, 
             userNameError: false,
-            confirmError: false
+            confirmError: false, 
+            serviceError: false, 
+            complete: false
         };
         this.switchForms = this.switchForms.bind(this);
         this.signInChange = this.signInChange.bind(this);
@@ -85,7 +88,18 @@ class Account extends React.Component {
                 password: this.state.signInCreds.password
             },
             success: res=>{
-                console.log(res);
+                res = JSON.parse(res);
+                if (!res.success){
+                    if (res.details==="failed query"){this.setState({signInError: false, serviceError: true});}
+                    else {this.setState({signInError: true, serviceError: false});}
+                    return;
+                } else {
+                    this.props.dispatch({
+                        type: "SIGN_IN",
+                        userName: this.state.signInCreds.userName
+                    });
+                    this.setState({complete: true});
+                }
             }
         });
     }
@@ -94,9 +108,9 @@ class Account extends React.Component {
         event.preventDefault();
 
         if (this.state.signUpCreds.password!==this.state.signUpCreds.confirm){
-            let stateCopy = {...this.state};
-            stateCopy.confirmError = true;
-            this.setState({...stateCopy});
+            this.setState({
+                confirmError: true
+            });
             return;
         }
 
@@ -109,17 +123,34 @@ class Account extends React.Component {
                 password: this.state.signUpCreds.password
             }, 
             success: res=>{
-                console.log(res);
+                res = JSON.parse(res);
+                if (!res.success){
+                    if (res.details==="failed query"){this.setState({serviceError: true, emailError: false, userNameError: false}); return;}
+                    else if (res.details==="email taken"){this.setState({serviceError: false, emailError: true, userNameError: false}); return;}
+                    else {this.setState({serviceError: false, emailError: false, userNameError: true}); return;}
+                } else {
+                    this.props.dispatch({
+                        type: "SIGN_IN",
+                        userName: this.state.signInCreds.userName
+                    });
+                    this.setState({complete: true});
+                }
             }
         })
     }
 
     render(){
+        if (this.state.complete){
+            return (<Redirect to="/"/>);
+        }
         if (this.state.signUp){
             return (
                 <div>
                     <SignUpForm input={this.signUpChange} submit={this.signUp}></SignUpForm>
                     <div>{this.state.confirmError ? "Please make sure you confirm the correct password" : null}</div>
+                    <div>{this.state.emailError ? "That email  address is already in use" : null}</div>
+                    <div>{this.state.userNameError ? "We're sorry, that username is already taken" : null}</div>
+                    <div>{this.state.serviceError ? "We're having some trouble processing your request, please try again later" : null}</div>
                     <div onClick={this.switchForms} className="switchLink">Already have an account? Sign in</div>
                 </div>
             );
@@ -127,12 +158,17 @@ class Account extends React.Component {
         return (
             <div>
                 <SignInForm input={this.signInChange} submit={this.signIn}></SignInForm>
+                <div>{this.state.signInError ? "We don't recognize that username and password combination, please try again" : null}</div>
+                <div>{this.state.serviceError ? "We're having some trouble processing your request, please try again later" : null}</div>
                 <div onClick={this.switchForms} className="switchLink">Don't have an account? Sign up</div>
             </div>
         );
     }
 
     componentDidMount(){
+        this.props.dispatch({
+            type: "SIGN_OUT"
+        });
         this.props.dispatch({
             type: "ACCOUNT"
         });    
