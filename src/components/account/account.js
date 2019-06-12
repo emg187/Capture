@@ -2,6 +2,7 @@ import React from "react";
 import {connect} from "react-redux";
 import $ from "jquery";
 
+import "./account.css";
 import SignUpForm from "../forms/signup";
 import SignInForm from "../forms/signin";
 
@@ -18,10 +19,11 @@ class Account extends React.Component {
                 email: "", 
                 userName: "", 
                 password: "", 
-                confirm: ""
+                confirm: "", 
+                confirmError: false
             }
         };
-        this.switchToSignUp = this.switchToSignUp.bind(this);
+        this.switch = this.switch.bind(this);
         this.signInUsername = this.signInUsername.bind(this);
         this.signInPassword = this.signInPassword.bind(this);
         this.email = this.email.bind(this);
@@ -32,9 +34,9 @@ class Account extends React.Component {
         this.signUp = this.signUp.bind(this);
     }
 
-    switchToSignUp(){
+    switch(){
         this.setState({
-            signUp: true
+            signUp: !this.state.signUp
         });
     }
 
@@ -62,7 +64,8 @@ class Account extends React.Component {
                 email: event.target.value,
                 userName: this.state.signUpCreds.userName, 
                 password: this.state.signUpCreds.password, 
-                confirm: this.state.signUpCreds.confirm
+                confirm: this.state.signUpCreds.confirm, 
+                confirmError: false
             }
         });
     }
@@ -73,7 +76,8 @@ class Account extends React.Component {
                 email: this.state.signUpCreds.email,
                 userName: event.target.value, 
                 password: this.state.signUpCreds.password, 
-                confirm: this.state.signUpCreds.confirm
+                confirm: this.state.signUpCreds.confirm, 
+                confirmError: false
             }
         });
     }
@@ -84,7 +88,8 @@ class Account extends React.Component {
                 email: this.state.signUpCreds.email,
                 userName: this.state.signUpCreds.userName, 
                 password: event.target.value, 
-                confirm: this.state.signUpCreds.confirm
+                confirm: this.state.signUpCreds.confirm,
+                confirmError: false
             }
         });
     }
@@ -95,13 +100,15 @@ class Account extends React.Component {
                 email: this.state.signUpCreds.email,
                 userName: this.state.signUpCreds.userName, 
                 password: this.state.signUpCreds.password, 
-                confirm: event.target.value
+                confirm: event.target.value, 
+                confirmError: false
             }
         });
     }
 
     signIn(event){
         event.preventDefault();
+
         $.ajax({
             type: "POST",
             url: "/api/signin.php", 
@@ -117,6 +124,20 @@ class Account extends React.Component {
 
     signUp(event){
         event.preventDefault();
+
+        if (this.state.signUpCreds.password!==this.state.signUpCreds.confirm){
+            this.setState({
+                signUpCreds: {
+                    email: this.state.signUpCreds.email,
+                    userName: this.state.signUpCreds.userName, 
+                    password: this.state.signUpCreds.password, 
+                    confirm: this.state.signUpCreds.confirm, 
+                    confirmError: true
+                }
+            });
+            return;
+        }
+
         $.ajax({
             type: "POST", 
             url: "/api/signup.php", 
@@ -137,12 +158,19 @@ class Account extends React.Component {
         });
         if (this.state.signUp){
             return (
-                <SignUpForm email={this.email} userName={this.signUpUsername} 
-                password={this.signUpPassword} confirm={this.confirm} signUp={this.signUp}></SignUpForm>
+                <div>
+                    <SignUpForm email={this.email} userName={this.signUpUsername} 
+                    password={this.signUpPassword} confirm={this.confirm} signUp={this.signUp}></SignUpForm>
+                    <div>{this.state.signUpCreds.confirmError ? "Please make sure you confirm the correct password" : null}</div>
+                    <div onClick={this.switch} className="switchLink">Already have an account? Sign in</div>
+                </div>
             );
         }
         return (
-            <SignInForm userName={this.signInUsername} password={this.signInPassword} signIn={this.signIn}></SignInForm>
+            <div>
+                <SignInForm userName={this.signInUsername} password={this.signInPassword} signIn={this.signIn}></SignInForm>
+                <div onClick={this.switch} className="switchLink">Don't have an account? Sign up</div>
+            </div>
         );
     }
 }

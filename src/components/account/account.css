@@ -1,0 +1,9 @@
+.switchLink {
+    text-decoration: underline;
+}
+    .switchLink:hover {
+        cursor: pointer;
+    }
+
+
+    
