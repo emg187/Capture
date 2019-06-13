@@ -52,6 +52,12 @@ class SignUpForm extends React.Component {
                     <Label>Confirm Password</Label>
                     <Input onChange={this.confirmChange}></Input>
                 </FormGroup>
+                <FormGroup check>
+                    <Label check>
+                        <Input type="checkbox" onChange={this.props.remember}/>
+                        Remember Me
+                    </Label>
+                </FormGroup>
                 <Button onClick={this.props.submit}>Submit</Button>
             </Form>
         );

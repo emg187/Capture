@@ -10,6 +10,9 @@ class SignInForm extends React.Component {
     constructor(props){
         super(props);
 
+        this.state = {
+            remember: false
+        };
         this.userNameChange = this.userNameChange.bind(this);
         this.passwordChange = this.passwordChange.bind(this);
     }
@@ -32,6 +35,12 @@ class SignInForm extends React.Component {
                 <FormGroup>
                     <Label>Password</Label>
                     <Input onChange={this.passwordChange}></Input>
+                </FormGroup>
+                <FormGroup check>
+                    <Label check>
+                        <Input type="checkbox" onChange={this.props.remember}/>
+                        Remember Me
+                    </Label>
                 </FormGroup>
                 <Button onClick={this.props.submit}>Submit</Button>
             </Form>

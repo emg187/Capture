@@ -28,11 +28,13 @@ class Account extends React.Component {
             userNameError: false,
             confirmError: false, 
             serviceError: false, 
+            remember: false,
             complete: false
         };
         this.switchForms = this.switchForms.bind(this);
         this.signInChange = this.signInChange.bind(this);
         this.signUpChange = this.signUpChange.bind(this);
+        this.remember = this.remember.bind(this);
         this.signIn = this.signIn.bind(this);
         this.signUp = this.signUp.bind(this);
     }
@@ -41,6 +43,11 @@ class Account extends React.Component {
         this.setState({
             signUp: !this.state.signUp
         });
+        if (this.state.remember){
+            this.setState({
+                remember: false
+            });
+        }
     }
 
     signInChange(field, value){
@@ -77,6 +84,12 @@ class Account extends React.Component {
         this.setState({...stateCopy});
     }
 
+    remember(){
+        this.setState({
+            remember: !this.state.remember
+        });
+    }
+
     signIn(event){
         event.preventDefault();
 
@@ -99,6 +112,9 @@ class Account extends React.Component {
                         userName: this.state.signInCreds.userName
                     });
                     this.setState({complete: true});
+                    if (this.state.remember){
+                        this.props.remember();
+                    }
                 }
             }
         });
@@ -135,6 +151,9 @@ class Account extends React.Component {
                         userName: this.state.signInCreds.userName
                     });
                     this.setState({complete: true});
+                    if (this.state.remember){
+                        this.props.remember();
+                    }
                 }
             }
         })
@@ -147,7 +166,7 @@ class Account extends React.Component {
         if (this.state.signUp){
             return (
                 <div>
-                    <SignUpForm input={this.signUpChange} submit={this.signUp}></SignUpForm>
+                    <SignUpForm input={this.signUpChange} remember={this.remember} submit={this.signUp}></SignUpForm>
                     <div>{this.state.confirmError ? "Please make sure you confirm the correct password" : null}</div>
                     <div>{this.state.emailError ? "That email  address is already in use" : null}</div>
                     <div>{this.state.userNameError ? "We're sorry, that username is already taken" : null}</div>
@@ -158,7 +177,7 @@ class Account extends React.Component {
         }
         return (
             <div>
-                <SignInForm input={this.signInChange} submit={this.signIn}></SignInForm>
+                <SignInForm input={this.signInChange} remember={this.remember} submit={this.signIn}></SignInForm>
                 <div>{this.state.signInError ? "We don't recognize that username and password combination, please try again" : null}</div>
                 <div>{this.state.serviceError ? "We're having some trouble processing your request, please try again later" : null}</div>
                 <div onClick={this.switchForms} className="switchLink">Don't have an account? Sign up</div>
