@@ -3,7 +3,6 @@ import {connect} from "react-redux";
 
 import LandingNav from "../navs/landingnav";
 import MenuNav from "../navs/menunav"; 
-import StatsModal from "../modals/modals";
 import "./header.css";
 import {Link, withRouter} from "react-router-dom";
 

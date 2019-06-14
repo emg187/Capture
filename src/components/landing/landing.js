@@ -2,8 +2,6 @@ import React from "react";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 
-import {SignInToast} from "../toasts/toasts";
-import StatsModal from "../modals/modals";
 import "./landing.css";
 
 class Landing extends React.Component {
@@ -11,7 +9,6 @@ class Landing extends React.Component {
         super (props);
 
         this.state = {
-            toast: false,
             modal: false
         };
         this.openModal = this.openModal.bind(this);
@@ -19,9 +16,7 @@ class Landing extends React.Component {
     }
 
     toast(){
-        this.setState({
-            toast: true
-        });
+        
     }
 
     openModal(){
@@ -43,18 +38,15 @@ class Landing extends React.Component {
                 <Link to="/matchmaking">Matchmaking</Link>
                 <Link to="/games">Current Games and Invites</Link>
                 <Link to="/friends">Friends List</Link>
-                <span onClick={this.openModal} className="landingStats">Your Stats</span>
+                <Link to="/stats">Your Stats</Link>
                 <Link to="/howtoplay">How To Play</Link>
-
-                <SignInToast isOpen={this.state.toast}/>
-                <StatsModal isOpen={this.state.modal} toggle={this.closeModal}/>
             </div>
         );
     }
 
     componentDidMount(){
         if (this.props.page==="account" && this.props.user){
-            this.toast();
+            this.toast(); //open toast
         }
         this.props.dispatch({
             type: "LANDING"

@@ -52,6 +52,7 @@ class App extends React.Component {
                 <Route path="/gameboard" component={Gameboard}/>
                 <Route path="/friends" component={Friendslist}/>
                 <Route path="/invites" component={Invites}/>
+                <Route path="/stats" component={Stats}/>
                 <Route path="/howtoplay" component={HowToPlay}/>
                 <Route path="/account" render={props=><Account {...props} remember={this.rememberMe}/>}/>
             </div>

@@ -26,3 +26,4 @@ class MenuNav extends React.Component {
     }
 }
 
+export default MenuNav;
