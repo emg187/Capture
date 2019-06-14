@@ -2,6 +2,7 @@ import React from "react";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 
+import {SignInToast} from "../toasts/toasts";
 import StatsModal from "../modals/modals";
 import "./landing.css";
 
@@ -10,10 +11,17 @@ class Landing extends React.Component {
         super (props);
 
         this.state = {
+            toast: false,
             modal: false
         };
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+    }
+
+    toast(){
+        this.setState({
+            toast: true
+        });
     }
 
     openModal(){
@@ -29,9 +37,6 @@ class Landing extends React.Component {
     }
 
     render(){
-        this.props.dispatch({
-            type: "LANDING"
-        });
         return (
             <div>
                 <h1>This is the landing page component</h1>
@@ -41,11 +46,28 @@ class Landing extends React.Component {
                 <span onClick={this.openModal} className="landingStats">Your Stats</span>
                 <Link to="/howtoplay">How To Play</Link>
 
+                <SignInToast isOpen={this.state.toast}/>
                 <StatsModal isOpen={this.state.modal} toggle={this.closeModal}/>
             </div>
         );
     }
+
+    componentDidMount(){
+        if (this.props.page==="account" && this.props.user){
+            this.toast();
+        }
+        this.props.dispatch({
+            type: "LANDING"
+        });
+    }
 }
 
-export default connect()(Landing);
+function mapStateToProps(state){
+    return {
+        user: state.user.auth,
+        page: state.page.current
+    };
+}
+
+export default connect(mapStateToProps)(Landing);
 

@@ -1,18 +1,9 @@
 import React from "react";
-import {
-    Form, 
-    FormGroup, 
-    Label, 
-    Input, 
-    Button} from "reactstrap";
 
 class SignInForm extends React.Component {
     constructor(props){
         super(props);
 
-        this.state = {
-            remember: false
-        };
         this.userNameChange = this.userNameChange.bind(this);
         this.passwordChange = this.passwordChange.bind(this);
     }
@@ -27,23 +18,21 @@ class SignInForm extends React.Component {
 
     render(){
         return (
-            <Form>
-                <FormGroup>
-                    <Label>Username</Label>
-                    <Input onChange={this.userNameChange}></Input>
-                </FormGroup>
-                <FormGroup>
-                    <Label>Password</Label>
-                    <Input onChange={this.passwordChange}></Input>
-                </FormGroup>
-                <FormGroup check>
-                    <Label check>
-                        <Input type="checkbox" onChange={this.props.remember}/>
-                        Remember Me
-                    </Label>
-                </FormGroup>
-                <Button onClick={this.props.submit}>Submit</Button>
-            </Form>
+            <form>
+                <div className="form-group">
+                    <label>Username</label>
+                    <input className="form-control"></input>
+                </div>
+                <div className="form-group">
+                    <label>Password</label>
+                    <input className="form-control" type="password"></input>
+                </div>
+                <div className="form-group form-check">
+                    <input className="form-check-input" type="checkbox"></input>
+                    <label>Remember Me</label>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
         );
     }
 }
