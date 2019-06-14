@@ -11,14 +11,9 @@ class SignUpForm extends React.Component {
     constructor(props){
         super(props);
 
-        this.emailChange = this.emailChange.bind(this);
         this.userNameChange = this.userNameChange.bind(this);
         this.passwordChange = this.passwordChange.bind(this);
         this.confirmChange = this.confirmChange.bind(this);
-    }
-
-    emailChange(event){
-        this.props.input("email", event.target.value);
     }
 
     userNameChange(event){
@@ -36,10 +31,6 @@ class SignUpForm extends React.Component {
     render(){
         return (
             <Form>
-                <FormGroup>
-                    <Label>Email</Label>
-                    <Input onChange={this.emailChange}></Input>
-                </FormGroup>
                 <FormGroup>
                     <Label>Username</Label>
                     <Input onChange={this.userNameChange}></Input>

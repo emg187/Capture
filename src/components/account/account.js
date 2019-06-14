@@ -7,6 +7,8 @@ import SignUpForm from "../forms/signup";
 import SignInForm from "../forms/signin";
 import "./account.css";
 
+import encrypt from "../../encrypt"; //contains custom encryption function to shield passwords
+
 class Account extends React.Component {
     constructor(props){
         super(props);
@@ -19,14 +21,14 @@ class Account extends React.Component {
             }, 
             signInError: false,
             signUpCreds: {
-                email: "", 
                 userName: "", 
                 password: "", 
                 confirm: "", 
             }, 
-            emailError: false, 
-            userNameError: false,
             confirmError: false, 
+            takenError: false, 
+            userLengthError: false, 
+            passwordLengthError: false,
             serviceError: false, 
             remember: false,
             complete: false
@@ -39,15 +41,33 @@ class Account extends React.Component {
         this.signUp = this.signUp.bind(this);
     }
 
+    setError(error){
+        this.setState({
+            [error]: true
+        });
+    }
+
+    resetErrors(){
+        this.setState({
+            signInError: false,
+            confirmError: false,
+            takenError: false, 
+            userLengthError: false, 
+            passwordLengthError: false,
+            serviceError: false
+        });
+    }
+
     switchForms(){
         this.setState({
-            signUp: !this.state.signUp
+            signUp: !this.state.signUp, 
         });
         if (this.state.remember){
             this.setState({
                 remember: false
             });
         }
+        this.resetErrors();
     }
 
     signInChange(field, value){
@@ -93,19 +113,29 @@ class Account extends React.Component {
     signIn(event){
         event.preventDefault();
 
+        if (this.state.signInCreds.userName.length===0 || this.state.signInCreds.password.length===0){
+            this.resetErrors();
+            this.setError("signInError");
+            return;
+        }
+
         $.ajax({
             type: "POST",
             url: "/api/signin.php", 
             data: {
                 userName: this.state.signInCreds.userName, 
-                password: this.state.signInCreds.password
+                password: encrypt(this.state.signInCreds.password)
             },
             success: res=>{
                 res = JSON.parse(res);
                 if (!res.success){
-                    if (res.details==="failed query"){this.setState({signInError: false, serviceError: true});}
-                    else {this.setState({signInError: true, serviceError: false});}
-                    return;
+                    if (res.details==="failed query"){
+                        this.resetErrors();
+                        this.setError("serviceError");
+                    } else {
+                        this.resetErrors();
+                        this.setError("signInError");
+                    }
                 } else {
                     this.props.dispatch({
                         type: "SIGN_IN",
@@ -124,9 +154,18 @@ class Account extends React.Component {
         event.preventDefault();
 
         if (this.state.signUpCreds.password!==this.state.signUpCreds.confirm){
-            this.setState({
-                confirmError: true
-            });
+            this.resetErrors();
+            this.setError("confirmError");
+            return;
+        }
+
+        if (this.state.signUpCreds.userName.length===0 || this.state.signUpCreds.userName.length>50){
+            this.resetErrors();
+            this.setError("userLengthError");
+            return;
+        } else if (this.state.signUpCreds.password.length<8 || this.state.signUpCreds.password.length>25){
+            this.resetErrors();
+            this.setError("passwordLengthError");
             return;
         }
 
@@ -134,17 +173,20 @@ class Account extends React.Component {
             type: "POST", 
             url: "/api/signup.php", 
             data: {
-                email: this.state.signUpCreds.email,
                 userName: this.state.signUpCreds.userName,
-                password: this.state.signUpCreds.password
+                password: encrypt(this.state.signUpCreds.password)
             }, 
             success: res=>{
                 res = JSON.parse(res);
                 if (!res.success){
-                    this.setState({confirmError: false});
-                    if (res.details==="failed query"){this.setState({serviceError: true, emailError: false, userNameError: false}); return;}
-                    else if (res.details==="email taken"){this.setState({serviceError: false, emailError: true, userNameError: false}); return;}
-                    else {this.setState({serviceError: false, emailError: false, userNameError: true}); return;}
+                    this.setState({confirmError: false, userLengthError: false, passwordLengthError: false});
+                    if (res.details==="failed query"){
+                        this.resetErrors();
+                        this.setError("serviceError");
+                    } else {
+                        this.resetErrors();
+                        this.setError("takenError");
+                    }
                 } else {
                     this.props.dispatch({
                         type: "SIGN_IN",
@@ -167,9 +209,10 @@ class Account extends React.Component {
             return (
                 <div>
                     <SignUpForm input={this.signUpChange} remember={this.remember} submit={this.signUp}></SignUpForm>
+                    <div>{this.state.userLengthError ? "Please make sure your username is between 1 and 50 characters" : null}</div>
+                    <div>{this.state.passwordLengthError ? "Please make sure your password is between 8 and 25 characters" : null}</div>
                     <div>{this.state.confirmError ? "Please make sure you confirm the correct password" : null}</div>
-                    <div>{this.state.emailError ? "That email  address is already in use" : null}</div>
-                    <div>{this.state.userNameError ? "We're sorry, that username is already taken" : null}</div>
+                    <div>{this.state.takenError ? "We're sorry, that username is already taken" : null}</div>
                     <div>{this.state.serviceError ? "We're having some trouble processing your request, please try again later" : null}</div>
                     <div onClick={this.switchForms} className="switchLink">Already have an account? Sign in</div>
                 </div>
@@ -178,6 +221,8 @@ class Account extends React.Component {
         return (
             <div>
                 <SignInForm input={this.signInChange} remember={this.remember} submit={this.signIn}></SignInForm>
+                <div>{this.state.userLengthError ? "Please make sure your username is between 1 and 50 characters" : null}</div>
+                <div>{this.state.passwordLengthError ? "Please make sure your password is between 8 and 25 characters" : null}</div>
                 <div>{this.state.signInError ? "We don't recognize that username and password combination, please try again" : null}</div>
                 <div>{this.state.serviceError ? "We're having some trouble processing your request, please try again later" : null}</div>
                 <div onClick={this.switchForms} className="switchLink">Don't have an account? Sign up</div>
@@ -191,6 +236,7 @@ class Account extends React.Component {
                 type: "SIGN_OUT"
             });
         }
+        //call clearcookie.php
         this.props.dispatch({
             type: "ACCOUNT"
         });    
