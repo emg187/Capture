@@ -23,25 +23,27 @@ class SignUpForm extends React.Component {
 
     render(){
         return (
-            <form>
-                <div className="form-group">
-                    <label>Username</label>
-                    <input className="form-control"></input>
-                </div>
-                <div className="form-group">
-                    <label>Password</label>
-                    <input className="form-control" type="password"></input>
-                </div>
-                <div className="form-group">
-                    <label>Confirm Password</label>
-                    <input className="form-control" type="password"></input>
-                </div>
-                <div className="form-group form-check">
-                    <input className="form-check-input" type="checkbox"></input>
-                    <label>Remember Me</label>
-                </div>
-                <button type="submit">Submit</button>
-            </form>
+            <div>
+                <form>
+                    <div className="form-group">
+                        <label>Username</label>
+                        <input className="form-control" onChange={this.userNameChange}></input>
+                    </div>
+                    <div className="form-group">
+                        <label>Password</label>
+                        <input className="form-control" type="password" onChange={this.passwordChange}></input>
+                    </div>
+                    <div className="form-group">
+                        <label>Confirm Password</label>
+                        <input className="form-control" type="password" onChange={this.confirmChange}></input>
+                    </div>
+                    <div className="form-group form-check">
+                        <input className="form-check-input" type="checkbox" onChange={this.props.remember}></input>
+                        <label>Remember Me</label>
+                    </div>
+                    <button onClick={this.props.submit}>Submit</button>
+                </form>
+            </div>
         );
     }
 }

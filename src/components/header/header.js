@@ -46,7 +46,6 @@ class Header extends React.Component {
         return (
             <div>
                 <MenuNav page={this.props.page} openModal={this.openModal}/>
-                <StatsModal isOpen={this.state.modal} toggle={this.closeModal}/>
                 <h3 className="text-center">Capture</h3>
             </div>
         );

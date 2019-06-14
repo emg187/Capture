@@ -2,6 +2,7 @@ import React from "react";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 
+import StatsModal from "../modals/stats";
 import "./landing.css";
 
 class Landing extends React.Component {
@@ -38,8 +39,10 @@ class Landing extends React.Component {
                 <Link to="/matchmaking">Matchmaking</Link>
                 <Link to="/games">Current Games and Invites</Link>
                 <Link to="/friends">Friends List</Link>
-                <Link to="/stats">Your Stats</Link>
+                <span data-toggle="modal" data-target="#statsmodal">Your Stats</span>
                 <Link to="/howtoplay">How To Play</Link>
+
+                <StatsModal/>
             </div>
         );
     }

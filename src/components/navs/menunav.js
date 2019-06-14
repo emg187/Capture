@@ -8,9 +8,9 @@ class MenuNav extends React.Component {
 
     render(){
         return (
-            <ul className="nav">
+            <ul className="nav justify-content-end">
                 <li className="nav-item dropdown">
-                    <a className="nav-link dropdown-toggle" data-toggle="dropdown">Menu</a>
+                    <a className="nav-link dropdown-toggle" data-toggle="dropdown"role="button" aria-haspopup="true" aria-expanded="false">Menu</a>
                     <div className="dropdown-menu">
                         <Link to="/">Home</Link>
                         <Link to="/matchmaking" className="dropdown-item">{this.props.page==="matchmaking" ? null : "Matchmaking"}</Link>
