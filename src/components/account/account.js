@@ -1,123 +1,151 @@
 import React from "react";
 import {connect} from "react-redux";
 import $ from "jquery";
+import {Redirect} from "react-router-dom";
 
-import "./account.css";
 import SignUpForm from "../forms/signup";
 import SignInForm from "../forms/signin";
+import "./account.css";
+
+import encrypt from "../../encrypt"; //contains custom encryption function to shield passwords
 
 class Account extends React.Component {
     constructor(props){
         super(props);
 
         this.state = {
+            signUp: false,
             signInCreds: {
                 userName: "",
                 password: ""
             }, 
+            signInError: false,
             signUpCreds: {
-                email: "", 
                 userName: "", 
                 password: "", 
                 confirm: "", 
-                confirmError: false
-            }
+            }, 
+            confirmError: false, 
+            takenError: false, 
+            userLengthError: false, 
+            passwordLengthError: false,
+            serviceError: false, 
+            remember: false,
+            complete: false
         };
-        this.switch = this.switch.bind(this);
-        this.signInUsername = this.signInUsername.bind(this);
-        this.signInPassword = this.signInPassword.bind(this);
-        this.email = this.email.bind(this);
-        this.signUpUsername = this.signUpUsername.bind(this);
-        this.signUpPassword = this.signUpPassword.bind(this);
-        this.confirm = this.confirm.bind(this);
+        this.switchForms = this.switchForms.bind(this);
+        this.signInChange = this.signInChange.bind(this);
+        this.signUpChange = this.signUpChange.bind(this);
+        this.remember = this.remember.bind(this);
         this.signIn = this.signIn.bind(this);
         this.signUp = this.signUp.bind(this);
     }
 
-    switch(){
+    setError(error){
         this.setState({
-            signUp: !this.state.signUp
+            [error]: true
         });
     }
 
-    signInUsername(event){
+    resetErrors(){
         this.setState({
-            signInCreds: {
-                userName: event.target.value,
-                password: this.state.signInCreds.password
-            }
+            signInError: false,
+            confirmError: false,
+            takenError: false, 
+            userLengthError: false, 
+            passwordLengthError: false,
+            serviceError: false
         });
     }
 
-    signInPassword(event){
+    switchForms(){
         this.setState({
-            signInCreds: {
-                userName: this.state.signInCreds.userName,
-                password: event.target.value
-            }
+            signUp: !this.state.signUp, 
         });
+        if (this.state.remember){
+            this.setState({
+                remember: false
+            });
+        }
+        this.resetErrors();
     }
 
-    email(event){
-        this.setState({
-            signUpCreds: {
-                email: event.target.value,
-                userName: this.state.signUpCreds.userName, 
-                password: this.state.signUpCreds.password, 
-                confirm: this.state.signUpCreds.confirm, 
-                confirmError: false
-            }
-        });
+    signInChange(field, value){
+        let stateCopy = {...this.state};
+
+        switch(field){
+            case "userName": 
+                stateCopy.signInCreds.userName = value;
+                break;
+            case "password": 
+                stateCopy.signInCreds.password = value;
+                break;
+        }
+        this.setState({...stateCopy});
     }
 
-    signUpUsername(event){
-        this.setState({
-            signUpCreds: {
-                email: this.state.signUpCreds.email,
-                userName: event.target.value, 
-                password: this.state.signUpCreds.password, 
-                confirm: this.state.signUpCreds.confirm, 
-                confirmError: false
-            }
-        });
+    signUpChange(field, value){
+        let stateCopy = {...this.state};
+
+        switch(field){
+            case "email": 
+                stateCopy.signUpCreds.email = value;
+                break;
+            case "userName": 
+                stateCopy.signUpCreds.userName = value;
+                break;
+            case "password": 
+                stateCopy.signUpCreds.password = value;
+                break;
+            case "confirm": 
+                stateCopy.signUpCreds.confirm = value;
+                break;
+        }
+        this.setState({...stateCopy});
     }
 
-    signUpPassword(event){
+    remember(){
         this.setState({
-            signUpCreds: {
-                email: this.state.signUpCreds.email,
-                userName: this.state.signUpCreds.userName, 
-                password: event.target.value, 
-                confirm: this.state.signUpCreds.confirm,
-                confirmError: false
-            }
-        });
-    }
-
-    confirm(event){
-        this.setState({
-            signUpCreds:{
-                email: this.state.signUpCreds.email,
-                userName: this.state.signUpCreds.userName, 
-                password: this.state.signUpCreds.password, 
-                confirm: event.target.value, 
-                confirmError: false
-            }
+            remember: !this.state.remember
         });
     }
 
     signIn(event){
         event.preventDefault();
 
+        if (this.state.signInCreds.userName.length===0 || this.state.signInCreds.password.length===0){
+            this.resetErrors();
+            this.setError("signInError");
+            return;
+        }
+
         $.ajax({
             type: "POST",
             url: "/api/signin.php", 
             data: {
                 userName: this.state.signInCreds.userName, 
-                password: this.state.signInCreds.password
+                password: encrypt(this.state.signInCreds.password)
             },
             success: res=>{
-                console.log(res);
+                res = JSON.parse(res);
+                if (!res.success){
+                    if (res.details==="failed query"){
+                        this.resetErrors();
+                        this.setError("serviceError");
+                    } else {
+                        this.resetErrors();
+                        this.setError("signInError");
+                    }
+                } else {
+                    this.props.dispatch({
+                        type: "SIGN_IN",
+                        userName: this.state.signInCreds.userName
+                    });
+                    this.setState({complete: true});
+                    if (this.state.remember){
+                        this.props.remember();
+                    }
+                }
             }
         });
     }
@@ -126,15 +154,18 @@ class Account extends React.Component {
         event.preventDefault();
 
         if (this.state.signUpCreds.password!==this.state.signUpCreds.confirm){
-            this.setState({
-                signUpCreds: {
-                    email: this.state.signUpCreds.email,
-                    userName: this.state.signUpCreds.userName, 
-                    password: this.state.signUpCreds.password, 
-                    confirm: this.state.signUpCreds.confirm, 
-                    confirmError: true
-                }
-            });
+            this.resetErrors();
+            this.setError("confirmError");
+            return;
+        }
+
+        if (this.state.signUpCreds.userName.length===0 || this.state.signUpCreds.userName.length>50){
+            this.resetErrors();
+            this.setError("userLengthError");
+            return;
+        } else if (this.state.signUpCreds.password.length<8 || this.state.signUpCreds.password.length>25){
+            this.resetErrors();
+            this.setError("passwordLengthError");
             return;
         }
 
@@ -142,38 +173,86 @@ class Account extends React.Component {
             type: "POST", 
             url: "/api/signup.php", 
             data: {
-                email: this.state.signUpCreds.email,
                 userName: this.state.signUpCreds.userName,
-                password: this.state.signUpCreds.password
+                password: encrypt(this.state.signUpCreds.password)
             }, 
             success: res=>{
-                console.log(res);
+                res = JSON.parse(res);
+                if (!res.success){
+                    if (res.details==="failed query"){
+                        this.resetErrors();
+                        this.setError("serviceError");
+                    } else {
+                        this.resetErrors();
+                        this.setError("takenError");
+                    }
+                } else {
+                    this.props.dispatch({
+                        type: "SIGN_IN",
+                        userName: this.state.signInCreds.userName
+                    });
+                    this.setState({complete: true});
+                    if (this.state.remember){
+                        this.props.remember();
+                    }
+                }
             }
-        })
+        });
     }
 
     render(){
-        this.props.dispatch({
-            type: "ACCOUNT"
-        });
+        if (this.state.complete){
+            return (<Redirect to="/"/>);
+        }
         if (this.state.signUp){
             return (
                 <div>
-                    <SignUpForm email={this.email} userName={this.signUpUsername} 
-                    password={this.signUpPassword} confirm={this.confirm} signUp={this.signUp}></SignUpForm>
-                    <div>{this.state.signUpCreds.confirmError ? "Please make sure you confirm the correct password" : null}</div>
-                    <div onClick={this.switch} className="switchLink">Already have an account? Sign in</div>
+                    <SignUpForm input={this.signUpChange} remember={this.remember} submit={this.signUp}></SignUpForm>
+                    <div>{this.state.userLengthError ? "Please make sure your username is between 1 and 50 characters" : null}</div>
+                    <div>{this.state.passwordLengthError ? "Please make sure your password is between 8 and 25 characters" : null}</div>
+                    <div>{this.state.confirmError ? "Please make sure you confirm the correct password" : null}</div>
+                    <div>{this.state.takenError ? "We're sorry, that username is already taken" : null}</div>
+                    <div>{this.state.serviceError ? "We're having some trouble processing your request, please try again later" : null}</div>
+                    <div onClick={this.switchForms} className="switchLink">Already have an account? Sign in</div>
                 </div>
             );
         }
         return (
             <div>
-                <SignInForm userName={this.signInUsername} password={this.signInPassword} signIn={this.signIn}></SignInForm>
-                <div onClick={this.switch} className="switchLink">Don't have an account? Sign up</div>
+                <SignInForm input={this.signInChange} remember={this.remember} submit={this.signIn}></SignInForm>
+                <div>{this.state.userLengthError ? "Please make sure your username is between 1 and 50 characters" : null}</div>
+                <div>{this.state.passwordLengthError ? "Please make sure your password is between 8 and 25 characters" : null}</div>
+                <div>{this.state.signInError ? "We don't recognize that username and password combination, please try again" : null}</div>
+                <div>{this.state.serviceError ? "We're having some trouble processing your request, please try again later" : null}</div>
+                <div onClick={this.switchForms} className="switchLink">Don't have an account? Sign up</div>
             </div>
         );
     }
+
+    componentDidMount(){
+        if (this.props.user){
+            this.props.dispatch({
+                type: "SIGN_OUT"
+            });
+        }
+        $.ajax({
+            type: "POST", 
+            url: "/api/clearcookie.php", 
+            success: res=>{
+                console.log(res);
+            }
+        });
+        this.props.dispatch({
+            type: "ACCOUNT"
+        });    
+    }
 }
 
-export default connect()(Account);
+function mapStateToProps(state){
+    return {
+        user: state.user.auth
+    };
+}
+
+export default connect(mapStateToProps)(Account);
 

@@ -1,4 +1,5 @@
 node_modules
+src/encrypt.js 
 public/api/mysql.php
 public/api/encrypt.php
 

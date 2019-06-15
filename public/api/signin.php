@@ -19,13 +19,13 @@ if (!$user_query_result){
     print(json_encode($output));
     exit;
 }
-if (mysqli_num_rows($user_query_result)!==1){
+if (mysqli_num_rows($user_query_result)===0){
     print(json_encode($output));
     exit;
 }
 
 $data = mysqli_fetch_assoc($user_query_result);
-if ($data["hashpassword"]===$password){
+if ($data["cred"]===$password){
     $output["success"] = true;
     print(json_encode($output));
     exit;

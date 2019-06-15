@@ -7,7 +7,6 @@ $output = [
     "success"=>false
 ];
 
-$email = $_POST["email"];
 $user_name = $_POST["userName"];
 $password = $_POST["password"];
 
@@ -21,11 +20,6 @@ if (!$get_users_result){
 }
 
 while ($row = mysqli_fetch_assoc($get_users_result)){
-    if ($row["email"]===$email){
-        $output["details"]="email taken";
-        print(json_encode($output));
-        exit;
-    }
     if ($row["username"]===$user_name){
         $output["details"]="username taken";
         print(json_encode($output));
@@ -34,8 +28,8 @@ while ($row = mysqli_fetch_assoc($get_users_result)){
 }
 
 $password = encrypt($password);
-$create_user_query = "INSERT INTO `users` (`username`, `hashpassword`, `email`)
-                        VALUES ('$user_name', '$password', '$email')";
+$create_user_query = "INSERT INTO `users` (`username`, `cred`)
+                        VALUES ('$user_name', '$password')";
 $create_user_result = mysqli_query($conn, $create_user_query);
 
 if (!$create_user_result || mysqli_affected_rows($conn)!==1){
