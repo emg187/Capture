@@ -37,7 +37,7 @@ class App extends React.Component {
             url: "/api/setcookie.php",
             data: {userName: this.props.user},
             success: res=>{
-                console.log(res);
+                console.log(JSON.parse(res));
             }
         });
     }

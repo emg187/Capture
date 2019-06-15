@@ -10,29 +10,37 @@ class Landing extends React.Component {
         super (props);
 
         this.state = {
-            modal: false
+            signedIn: false
         };
-        this.openModal = this.openModal.bind(this);
-        this.closeModal = this.closeModal.bind(this);
     }
 
-    toast(){
-        
-    }
-
-    openModal(){
+    signInSuccess(){
         this.setState({
-            modal: true
+            signedIn: true
         });
-    }
-
-    closeModal(){
-        this.setState({
-            modal: false
-        });
+        setTimeout(()=>{
+            this.setState({
+                signedIn: false
+            });
+        }, 3500);
     }
 
     render(){
+        if (this.state.signedIn){
+            return (
+                <div>
+                    <h1>This is the landing page component</h1>
+                    <Link to="/matchmaking">Matchmaking</Link>
+                    <Link to="/games">Current Games and Invites</Link>
+                    <Link to="/friends">Friends List</Link>
+                    <span data-toggle="modal" data-target="#statsmodal">Your Stats</span>
+                    <Link to="/howtoplay">How To Play</Link>
+
+                    <div>You've successfully signed in!</div>
+                    <StatsModal/>
+                </div>
+            );
+        }
         return (
             <div>
                 <h1>This is the landing page component</h1>
@@ -49,7 +57,7 @@ class Landing extends React.Component {
 
     componentDidMount(){
         if (this.props.page==="account" && this.props.user){
-            this.toast(); //open toast
+            this.signInSuccess(); 
         }
         this.props.dispatch({
             type: "LANDING"

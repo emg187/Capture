@@ -179,7 +179,6 @@ class Account extends React.Component {
             success: res=>{
                 res = JSON.parse(res);
                 if (!res.success){
-                    this.setState({confirmError: false, userLengthError: false, passwordLengthError: false});
                     if (res.details==="failed query"){
                         this.resetErrors();
                         this.setError("serviceError");
@@ -198,7 +197,7 @@ class Account extends React.Component {
                     }
                 }
             }
-        })
+        });
     }
 
     render(){
@@ -236,7 +235,13 @@ class Account extends React.Component {
                 type: "SIGN_OUT"
             });
         }
-        //call clearcookie.php
+        $.ajax({
+            type: "POST", 
+            url: "/api/clearcookie.php", 
+            success: res=>{
+                console.log(res);
+            }
+        });
         this.props.dispatch({
             type: "ACCOUNT"
         });    
