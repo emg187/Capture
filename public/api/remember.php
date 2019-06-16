@@ -13,16 +13,34 @@ $token = token();
 setcookie("captureUsername", $userName, time()+(60*60*24*30));
 setcookie("captureToken", $token, time()+(60*60*24*30));
 
-$token_query = "INSERT INTO `tokens` (`user`, `token`) 
-                    VALUES ('$userName', '$token')";
-$token_query_result = mysqli_query($conn, $token_query);
+$check_token_query = "SELECT * FROM `tokens` WHERE `username`='$userName'";
+$check_token_result = mysqli_query($conn, $check_token_query);
+if (!$check_token_result){
+    $output["details"] = "failed query";
+    print(json_encode($output));
+    exit;
+}
+if (mysqli_num_rows($check_token_result)===0){
+    $new_token_query = "INSERT INTO `tokens` (`username`, `token`) 
+                        VALUES ('$userName', '$token')";
+    $new_token_result = mysqli_query($conn, $new_token_query);
 
-if ($token_query_result && mysqli_affected_rows($conn)===1){
-    $output["success"] = true;
+    if ($new_token_result && mysqli_num_rows($new_token_result)===1){
+        $output["success"] = true;
+        print(json_encode($output));
+        exit;
+    }
+}
+
+$update_token_query = "UPDATE `tokens` SET `token`='$token' WHERE `username`='$userName'";
+$update_token_result = mysqli_query($conn, $update_token_query);
+if (!$update_token_result || mysqli_affected_rows($conn)!==1){
+    $output["details"] = "failed query";
     print(json_encode($output));
     exit;
 }
 
+$output["success"] = true;
 print(json_encode($output));
 exit;
 

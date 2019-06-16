@@ -235,13 +235,6 @@ class Account extends React.Component {
                 type: "SIGN_OUT"
             });
         }
-        $.ajax({
-            type: "POST", 
-            url: "/api/clearcookie.php", 
-            success: res=>{
-                console.log(res);
-            }
-        });
         this.props.dispatch({
             type: "ACCOUNT"
         });    

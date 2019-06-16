@@ -26,7 +26,7 @@ class App extends React.Component {
             type: "POST",
             url: "/api/checksignin.php",
             success: res=>{
-                
+                console.log(JSON.parse(res));
             }
         });
     }
@@ -34,7 +34,7 @@ class App extends React.Component {
     rememberMe(){
         $.ajax({
             type: "POST", 
-            url: "/api/setcookie.php",
+            url: "/api/remember.php",
             data: {userName: this.props.user},
             success: res=>{
                 console.log(JSON.parse(res));
