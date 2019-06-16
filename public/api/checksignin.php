@@ -25,8 +25,8 @@ if (isset($_COOKIE["captureUsername"]) && isset($_COOKIE["captureToken"])){
 
     $data = mysqli_fetch_assoc($check_token_result);
     if ($data["token"]===$token){
-        
         $new_token = token();
+        
         $update_token_query = "UPDATE `tokens` SET `token`='$new_token' WHERE `username`='$username'";
         $update_token_result = mysqli_query($conn, $update_token_query);
         if (!$update_token_result || mysqli_affected_rows($conn)!==1){
