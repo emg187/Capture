@@ -29,10 +29,10 @@ if ($data["cred"]===$password){
     $output["success"] = true;
     print(json_encode($output));
     exit;
-} else {
-    print(json_encode($output));
-    exit;
-}
+} 
+
+print(json_encode($output));
+exit;
 
 ?>
 

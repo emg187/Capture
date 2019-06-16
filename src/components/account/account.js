@@ -5,6 +5,7 @@ import {Redirect} from "react-router-dom";
 
 import SignUpForm from "../forms/signup";
 import SignInForm from "../forms/signin";
+import Error from "./errors";
 import "./account.css";
 
 import encrypt from "../../encrypt"; //contains custom encryption function to shield passwords
@@ -19,17 +20,12 @@ class Account extends React.Component {
                 userName: "",
                 password: ""
             }, 
-            signInError: false,
             signUpCreds: {
                 userName: "", 
                 password: "", 
                 confirm: "", 
             }, 
-            confirmError: false, 
-            takenError: false, 
-            userLengthError: false, 
-            passwordLengthError: false,
-            serviceError: false, 
+            error: "",
             remember: false,
             complete: false
         };
@@ -43,18 +39,7 @@ class Account extends React.Component {
 
     setError(error){
         this.setState({
-            [error]: true
-        });
-    }
-
-    resetErrors(){
-        this.setState({
-            signInError: false,
-            confirmError: false,
-            takenError: false, 
-            userLengthError: false, 
-            passwordLengthError: false,
-            serviceError: false
+            error: error
         });
     }
 
@@ -67,7 +52,7 @@ class Account extends React.Component {
                 remember: false
             });
         }
-        this.resetErrors();
+        this.setError("");
     }
 
     signInChange(field, value){
@@ -114,7 +99,6 @@ class Account extends React.Component {
         event.preventDefault();
 
         if (this.state.signInCreds.userName.length===0 || this.state.signInCreds.password.length===0){
-            this.resetErrors();
             this.setError("signInError");
             return;
         }
@@ -130,10 +114,8 @@ class Account extends React.Component {
                 res = JSON.parse(res);
                 if (!res.success){
                     if (res.details==="failed query"){
-                        this.resetErrors();
                         this.setError("serviceError");
                     } else {
-                        this.resetErrors();
                         this.setError("signInError");
                     }
                 } else {
@@ -154,17 +136,14 @@ class Account extends React.Component {
         event.preventDefault();
 
         if (this.state.signUpCreds.password!==this.state.signUpCreds.confirm){
-            this.resetErrors();
             this.setError("confirmError");
             return;
         }
 
         if (this.state.signUpCreds.userName.length===0 || this.state.signUpCreds.userName.length>50){
-            this.resetErrors();
             this.setError("userLengthError");
             return;
         } else if (this.state.signUpCreds.password.length<8 || this.state.signUpCreds.password.length>25){
-            this.resetErrors();
             this.setError("passwordLengthError");
             return;
         }
@@ -180,16 +159,14 @@ class Account extends React.Component {
                 res = JSON.parse(res);
                 if (!res.success){
                     if (res.details==="failed query"){
-                        this.resetErrors();
                         this.setError("serviceError");
                     } else {
-                        this.resetErrors();
                         this.setError("takenError");
                     }
                 } else {
                     this.props.dispatch({
                         type: "SIGN_IN",
-                        userName: this.state.signInCreds.userName
+                        userName: this.state.signUpCreds.userName
                     });
                     this.setState({complete: true});
                     if (this.state.remember){
@@ -208,11 +185,7 @@ class Account extends React.Component {
             return (
                 <div>
                     <SignUpForm input={this.signUpChange} remember={this.remember} submit={this.signUp}></SignUpForm>
-                    <div>{this.state.userLengthError ? "Please make sure your username is between 1 and 50 characters" : null}</div>
-                    <div>{this.state.passwordLengthError ? "Please make sure your password is between 8 and 25 characters" : null}</div>
-                    <div>{this.state.confirmError ? "Please make sure you confirm the correct password" : null}</div>
-                    <div>{this.state.takenError ? "We're sorry, that username is already taken" : null}</div>
-                    <div>{this.state.serviceError ? "We're having some trouble processing your request, please try again later" : null}</div>
+                    <Error error={this.state.error}/>
                     <div onClick={this.switchForms} className="switchLink">Already have an account? Sign in</div>
                 </div>
             );
@@ -220,10 +193,7 @@ class Account extends React.Component {
         return (
             <div>
                 <SignInForm input={this.signInChange} remember={this.remember} submit={this.signIn}></SignInForm>
-                <div>{this.state.userLengthError ? "Please make sure your username is between 1 and 50 characters" : null}</div>
-                <div>{this.state.passwordLengthError ? "Please make sure your password is between 8 and 25 characters" : null}</div>
-                <div>{this.state.signInError ? "We don't recognize that username and password combination, please try again" : null}</div>
-                <div>{this.state.serviceError ? "We're having some trouble processing your request, please try again later" : null}</div>
+                <Error error={this.state.error}/>
                 <div onClick={this.switchForms} className="switchLink">Don't have an account? Sign up</div>
             </div>
         );
@@ -235,13 +205,6 @@ class Account extends React.Component {
                 type: "SIGN_OUT"
             });
         }
-        $.ajax({
-            type: "POST", 
-            url: "/api/clearcookie.php", 
-            success: res=>{
-                console.log(res);
-            }
-        });
         this.props.dispatch({
             type: "ACCOUNT"
         });    
