@@ -140,10 +140,10 @@ class Account extends React.Component {
             return;
         }
 
-        if (this.state.signUpCreds.userName.length===0 || this.state.signUpCreds.userName.length>50){
+        if (this.state.signUpCreds.userName.length===0 || this.state.signUpCreds.userName.length>25){
             this.setError("userLengthError");
             return;
-        } else if (this.state.signUpCreds.password.length<8 || this.state.signUpCreds.password.length>25){
+        } else if (this.state.signUpCreds.password.length<8 || this.state.signUpCreds.password.length>40){
             this.setError("passwordLengthError");
             return;
         }

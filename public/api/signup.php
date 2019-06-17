@@ -1,7 +1,6 @@
 <?php
 
 require_once("mysql.php");
-require_once("encrypt.php");
 
 $output = [
     "success"=>false, 
@@ -27,7 +26,7 @@ while ($row = mysqli_fetch_assoc($get_users_result)){
     }
 }
 
-$password = encrypt($password);
+$password = password_hash($password, PASSWORD_BCRYPT);
 $create_user_query = "INSERT INTO `users` (`username`, `cred`)
                         VALUES ('$user_name', '$password')";
 $create_user_result = mysqli_query($conn, $create_user_query);

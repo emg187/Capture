@@ -1,7 +1,6 @@
 <?php
 
-require_once("mysql.php");
-require_once("encrypt.php");
+require_once("mysql.php"); //contains $conn, our connection to the database
 
 $output = [
     "success"=>false
@@ -9,7 +8,6 @@ $output = [
 
 $user_name = $_POST["userName"];
 $password = $_POST["password"];
-$password = encrypt($password);
 
 $user_query = "SELECT * FROM `users` WHERE `username`='$user_name'";
 $user_query_result = mysqli_query($conn, $user_query);
@@ -25,7 +23,7 @@ if (mysqli_num_rows($user_query_result)===0){
 }
 
 $data = mysqli_fetch_assoc($user_query_result);
-if ($data["cred"]===$password){
+if (password_verify($password, $data["password"])){
     $output["success"] = true;
     print(json_encode($output));
     exit;
