@@ -37,7 +37,7 @@ if ($_POST["search"]){
 
     if ($_POST["type"]==="add"){
         $add_friend_query = "INSERT INTO `friends` (`friendA`, `friendB`) VALUES ('$friendA', '$friendB')";
-        $add_friend_result = mysqli_query($conn, $add_friend_result);
+        $add_friend_result = mysqli_query($conn, $add_friend_query);
         if (!$add_friend_result || mysqli_affected_rows($conn)!==1){
             $output["success"] = false;
             $output["details"] = "failed query";
@@ -49,9 +49,6 @@ if ($_POST["search"]){
         print(json_encode($output));
         exit;
     } else {
-        $friendA = $_POST["friendA"];
-        $friendB = $_POST["friendB"];
-
         $get_friends_query = "SELECT * FROM `friends`";
         $get_friends_result = mysqli_query($conn, $get_friends_query);
         if (!$get_friends_result || mysqli_num_rows($get_friends_result)===0){
