@@ -1,7 +1,6 @@
 <?php
 
 require_once("mysql.php");
-require_once("token.php");
 
 $output = [
     "success"=>false
@@ -25,7 +24,7 @@ if (isset($_COOKIE["captureUsername"]) && isset($_COOKIE["captureToken"])){
 
     $data = mysqli_fetch_assoc($check_token_result);
     if ($data["token"]===$token){
-        $new_token = token();
+        $new_token = uniqid();
         
         $update_token_query = "UPDATE `tokens` SET `token`='$new_token' WHERE `username`='$username'";
         $update_token_result = mysqli_query($conn, $update_token_query);
@@ -35,8 +34,13 @@ if (isset($_COOKIE["captureUsername"]) && isset($_COOKIE["captureToken"])){
             exit;
         }
 
-        setcookie("captureUsername", $username, time()+60*60*24*30);
-        setcookie("captureToken", $new_token, time()+60*60*24*30);
+        $options = [
+            "expires"=>time()+(60*60*24*30),
+            "httponly"=>true
+        ];
+        setcookie("captureUsername", $username, $options);
+        setcookie("captureToken", $new_token, $options);
+
         $output["success"] = true;
         $output["username"] = $username;
         print(json_encode($output));

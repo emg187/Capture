@@ -1,17 +1,20 @@
 <?php
 
 require_once("mysql.php");
-require_once("token.php");
 
 $output = [
     "success"=>false
 ];
 
 $userName = $_POST["userName"];
-$token = token();
+$token = uniqid();
 
-setcookie("captureUsername", $userName, time()+(60*60*24*30));
-setcookie("captureToken", $token, time()+(60*60*24*30));
+$options = [
+    "expires"=>time()+(60*60*24*30),
+    "httponly"=>true
+];
+setcookie("captureUsername", $userName, $options);
+setcookie("captureToken", $token, $options);
 
 $check_token_query = "SELECT * FROM `tokens` WHERE `username`='$userName'";
 $check_token_result = mysqli_query($conn, $check_token_query);
