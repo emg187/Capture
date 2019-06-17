@@ -35,7 +35,7 @@ class App extends React.Component {
         $.ajax({
             type: "POST", 
             url: "/api/remember.php",
-            data: {userName: this.props.user},
+            data: {username: this.props.user},
             success: res=>{
                 console.log(JSON.parse(res));
             }

@@ -6,10 +6,10 @@ $output = [
     "success"=>false
 ];
 
-$user_name = $_POST["userName"];
+$username = $_POST["username"];
 $password = $_POST["password"];
 
-$user_query = "SELECT * FROM `users` WHERE `username`='$user_name'";
+$user_query = "SELECT * FROM `users` WHERE `username`='$username'";
 $user_query_result = mysqli_query($conn, $user_query);
 
 if (!$user_query_result){

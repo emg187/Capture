@@ -17,11 +17,11 @@ class Account extends React.Component {
         this.state = {
             signUp: false,
             signInCreds: {
-                userName: "",
+                username: "",
                 password: ""
             }, 
             signUpCreds: {
-                userName: "", 
+                username: "", 
                 password: "", 
                 confirm: "", 
             }, 
@@ -60,7 +60,7 @@ class Account extends React.Component {
 
         switch(field){
             case "userName": 
-                stateCopy.signInCreds.userName = value;
+                stateCopy.signInCreds.username = value;
                 break;
             case "password": 
                 stateCopy.signInCreds.password = value;
@@ -77,7 +77,7 @@ class Account extends React.Component {
                 stateCopy.signUpCreds.email = value;
                 break;
             case "userName": 
-                stateCopy.signUpCreds.userName = value;
+                stateCopy.signUpCreds.username = value;
                 break;
             case "password": 
                 stateCopy.signUpCreds.password = value;
@@ -98,7 +98,7 @@ class Account extends React.Component {
     signIn(event){
         event.preventDefault();
 
-        if (this.state.signInCreds.userName.length===0 || this.state.signInCreds.password.length===0){
+        if (this.state.signInCreds.username.length===0 || this.state.signInCreds.password.length===0){
             this.setError("signInError");
             return;
         }
@@ -107,7 +107,7 @@ class Account extends React.Component {
             type: "POST",
             url: "/api/signin.php", 
             data: {
-                userName: this.state.signInCreds.userName, 
+                username: this.state.signInCreds.username, 
                 password: encrypt(this.state.signInCreds.password)
             },
             success: res=>{
@@ -121,7 +121,7 @@ class Account extends React.Component {
                 } else {
                     this.props.dispatch({
                         type: "SIGN_IN",
-                        userName: this.state.signInCreds.userName
+                        username: this.state.signInCreds.username
                     });
                     this.setState({complete: true});
                     if (this.state.remember){
@@ -140,7 +140,7 @@ class Account extends React.Component {
             return;
         }
 
-        if (this.state.signUpCreds.userName.length===0 || this.state.signUpCreds.userName.length>25){
+        if (this.state.signUpCreds.username.length===0 || this.state.signUpCreds.username.length>25){
             this.setError("userLengthError");
             return;
         } else if (this.state.signUpCreds.password.length<8 || this.state.signUpCreds.password.length>40){
@@ -152,7 +152,7 @@ class Account extends React.Component {
             type: "POST", 
             url: "/api/signup.php", 
             data: {
-                userName: this.state.signUpCreds.userName,
+                username: this.state.signUpCreds.username,
                 password: encrypt(this.state.signUpCreds.password)
             }, 
             success: res=>{
@@ -166,7 +166,7 @@ class Account extends React.Component {
                 } else {
                     this.props.dispatch({
                         type: "SIGN_IN",
-                        userName: this.state.signUpCreds.userName
+                        username: this.state.signUpCreds.username
                     });
                     this.setState({complete: true});
                     if (this.state.remember){
