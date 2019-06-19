@@ -1,10 +1,11 @@
 <?php
 
 require_once("mysql.php");
-$output = [];
+$output = [
+    "success"=>false
+];
 
 if (!$conn){
-    $output["success"] = false;
     $output["details"] = "failed connection";
     print(json_encode($output));
     exit;
@@ -18,7 +19,6 @@ if ($_POST["update"]){
         $add_game_query = "INSERT INTO `games` (`opponentA`, `opponentB`) VALUES ('$opponentA', '$opponentB')";
         $add_game_result = mysqli_query($conn, $add_game_query);
         if (!$add_game_result || mysqli_affected_rows($conn)!==1){
-            $output["success"] = false;
             $output["details"] = "failed query";
             print(json_encode($output));
             exit;
@@ -31,7 +31,6 @@ if ($_POST["update"]){
         $get_games_query = "SELECT * FROM `games`";
         $get_games_result = mysqli_query($conn, $get_games_query);
         if (!$get_games_result || mysqli_num_rows($get_games_result)===0){
-            $output["success"] = false;
             $output["details"] = "failed query";
             print(json_encode($output));
             exit;
@@ -45,7 +44,6 @@ if ($_POST["update"]){
                     $remove_game_query = "DELETE FROM `games` WHERE `id`=$id";
                     $remove_game_result = mysqli_query($conn, $remove_game_query);
                     if (!$remove_game_result || mysqli_affected_rows($conn)!==1){
-                        $output["success"] = false;
                         $output["details"] = "failed query";
                         print(json_encode($output));
                         exit;
@@ -90,13 +88,11 @@ if ($_POST["update"]){
     $get_games_query = "SELECT * FROM `games` WHERE `opponentA`='$username' OR `opponentB`='$username'";
     $get_games_result = mysqli_query($conn, $get_games_query);
     if (!$get_games_result){
-        $output["success"] = false;
         $output["details"] = "failed query";
         print(json_encode($output));
         exit;
     }
     if (mysqli_num_rows($get_games_result)===0){
-        $output["success"] = false;
         $output["details"] = "no games";
         print(json_encode($output));
         exit;

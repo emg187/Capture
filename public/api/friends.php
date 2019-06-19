@@ -1,10 +1,11 @@
 <?php
 
 require_once("mysql.php");
-$output = [];
+$output = [
+    "success"=>false
+];
 
 if (!$conn){
-    $output["success"] = false;
     $output["details"] = "failed connection";
     print(json_encode($output));
     exit;
@@ -16,13 +17,11 @@ if ($_POST["search"]){
     $check_users_query = "SELECT * FROM `users` WHERE `username`='$username'";
     $check_users_result = mysqli_query($conn, $check_users_query);
     if (!$check_users_result){
-        $output["success"] = false;
         $output["details"] = "failed query";
         print(json_encode($output));
         exit;
     }
     if (mysqli_num_rows($check_users_result)!==1){
-        $output["success"] = false;
         $output["details"] = "no user";
         print(json_encode($output));
         exit;
@@ -39,7 +38,6 @@ if ($_POST["search"]){
         $add_friend_query = "INSERT INTO `friends` (`friendA`, `friendB`) VALUES ('$friendA', '$friendB')";
         $add_friend_result = mysqli_query($conn, $add_friend_query);
         if (!$add_friend_result || mysqli_affected_rows($conn)!==1){
-            $output["success"] = false;
             $output["details"] = "failed query";
             print(json_encode($output));
             exit;
@@ -52,7 +50,6 @@ if ($_POST["search"]){
         $get_friends_query = "SELECT * FROM `friends`";
         $get_friends_result = mysqli_query($conn, $get_friends_query);
         if (!$get_friends_result || mysqli_num_rows($get_friends_result)===0){
-            $output["success"] = false;
             $output["details"] = "failed query";
             print(json_encode($output));
             exit;
@@ -66,7 +63,6 @@ if ($_POST["search"]){
                     $remove_friend_query = "DELETE FROM `friends` WHERE `id`=$id";
                     $remove_friend_result = mysqli_query($conn, $remove_friend_query);
                     if (!$remove_friend_result || mysqli_affected_rows($conn)!==1){
-                        $output["success"] = false;
                         $output["details"] = "failed query";
                         print(json_encode($output));
                         exit;
@@ -85,13 +81,11 @@ if ($_POST["search"]){
     $get_friends_query = "SELECT * FROM `friends` WHERE `friendA`='$username' OR `friendB`='$username'";
     $get_friends_result = mysqli_query($conn, $get_friends_query);
     if (!$get_friends_result){
-        $output["success"] = false;
         $output["details"] = "failed query";
         print(json_encode($output));
         exit;
     }
     if (mysqli_num_rows($get_friends_result)===0){
-        $output["success"] = false;
         $output["details"] = "no friends";
         print(json_encode($output));
         exit;

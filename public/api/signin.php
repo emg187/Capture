@@ -5,10 +5,15 @@ require_once("mysql.php"); //contains $conn, our connection to the database
 $output = [
     "success"=>false
 ];
+if (!$conn){
+    $output["details"] = "failed connection";
+    print(json_encode($output));
+    exit;
+}
 
 $username = $_POST["username"];
 $password = $_POST["password"];
-
+    
 $user_query = "SELECT * FROM `users` WHERE `username`='$username'";
 $user_query_result = mysqli_query($conn, $user_query);
 

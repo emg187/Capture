@@ -1,6 +1,7 @@
 const initialUserState = {
     auth: false, 
-    username: ""
+    id: "", 
+    token: ""
 };
 const initialUiState = {
     current: "landing"
@@ -12,7 +13,7 @@ export function userReducer(state, action){
     }
     switch(action.type){
         case "SIGN_IN": 
-            return {...state, auth: true, userName: action.username};
+            return {...state, auth: true, username: action.username};
         case "SIGN_OUT": 
             return {...state, auth: false, username: ""};
         default: 

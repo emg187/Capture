@@ -1,10 +1,14 @@
 <?php
 
 require_once("mysql.php");
-
 $output = [
     "success"=>false
 ];
+if (!$conn){
+    $output["details"] = "failed connection";
+    print(json_encode($output));
+    exit;
+}
 
 if (isset($_COOKIE["captureUsername"]) && isset($_COOKIE["captureToken"])){
     $username = $_COOKIE["captureUsername"];

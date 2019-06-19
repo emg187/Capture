@@ -1,10 +1,11 @@
 <?php
 
 require_once("mysql.php");
-$output = [];
+$output = [
+    "success"=>false
+];
 
 if (!$conn){
-    $output["success"] = false;
     $output["details"] = "failed connection";
     print(json_encode($output));
     exit;
@@ -46,7 +47,6 @@ if ($_POST["update"]){
     $get_stats_query = "SELECT * FROM `users` WHERE `username`='$username'";
     $get_stats_result = mysqli_query($conn, $get_stats_query);
     if (!$get_stats_result || mysqli_num_rows($get_stats_result)!==1){
-        $output["success"] = false;
         $output["details"] = "failed query";
         print(json_encode($output));
         exit;
