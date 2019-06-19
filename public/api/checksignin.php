@@ -2,7 +2,8 @@
 
 require_once("mysql.php");
 $output = [
-    "success"=>false
+    "success"=>false, 
+    "details"=>"failed query"
 ];
 if (!$conn){
     $output["details"] = "failed connection";
@@ -10,53 +11,52 @@ if (!$conn){
     exit;
 }
 
-if (isset($_COOKIE["captureUsername"]) && isset($_COOKIE["captureToken"])){
-    $username = $_COOKIE["captureUsername"];
-    $token = $_COOKIE["captureToken"];
+if (isset($_COOKIE["capture"]) && !empty($_COOKIE["capture"])){
+    $arr = explode(":", $_COOKIE["capture"]);
+    $id = $arr[0];
+    $id = (int)$id;
+    $token = $arr[1];
 
-    $check_token_query = "SELECT * FROM `users` WHERE `username`='$username'";
-    $check_token_result = mysqli_query($conn, $check_token_query);
-    if (!$check_token_result){
-        $output["details"] = "failed query";
-        print(json_encode($output));
-        exit;
-    }
-    if (mysqli_num_rows($check_token_result)!==1){
-        print(json_encode($output));
-        exit;
-    }
+    if ($statement = mysqli_prepare($conn, "SELECT * FROM `users` WHERE `id`=?")){
+        mysqli_stmt_bind_param($statement, "i", $id);
+        mysqli_stmt_execute($statement);
+        if ($result = mysqli_stmt_get_result($statement)){
+            while ($row = mysqli_fetch_assoc($result)){
+                if ($token===$row["token"]){
+                    $new_token = uniqid("", true);
+                    $token_update_query = "UPDATE `users` SET `token`='$new_token' WHERE `id`=$id";
+                    $token_update_result = mysqli_query($conn, $token_update_query);
 
-    $data = mysqli_fetch_assoc($check_token_result);
-    if ($data["token"]===$token){
-        $new_token = uniqid("", true);
-        
-        $update_token_query = "UPDATE `users` SET `token`='$new_token' WHERE `username`='$username'";
-        $update_token_result = mysqli_query($conn, $update_token_query);
-        if (!$update_token_result || mysqli_affected_rows($conn)!==1){
-            $output["details"] = "failed query";
+                    if (!$token_update_result || mysqli_affected_rows($conn)!==1){
+                        print(json_encode($output));
+                        exit;
+                    }
+                    $cookie_value = $id . ":" . $new_token;
+                    $options = [
+                        "expires"=>time()+(60*60*24*30),
+                        "httponly"=>true
+                    ];
+                    setcookie("capture", $cookie_value, $options);
+
+                    $output["success"] = true;
+                    print(json_encode($output));
+                    exit;
+                }
+            }
+            $output["details"] = "no sign in";
             print(json_encode($output));
             exit;
         }
-
-        $options = [
-            "expires"=>time()+(60*60*24*30),
-            "httponly"=>true
-        ];
-        setcookie("captureUsername", $username, $options);
-        setcookie("captureToken", $new_token, $options);
-
-        $output["success"] = true;
-        $output["username"] = $username;
         print(json_encode($output));
         exit;
     }
-
+    print(json_encode($output));
+    exit;
+} else {
+    $output["details"] = "no sign in";
     print(json_encode($output));
     exit;
 }
-
-print(json_encode($output));
-exit;
 
 ?>
 
