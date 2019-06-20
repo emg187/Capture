@@ -2,7 +2,8 @@
 
 require_once("mysql.php");
 $output = [
-    "success"=>false
+    "success"=>false, 
+    "details"=>"failed query";
 ];
 
 if (!$conn){
@@ -11,53 +12,74 @@ if (!$conn){
     exit;
 }
 
-$username = $_POST["username"];
-
 if ($_POST["update"]){
+    $id = (int)$_POST["id"];
+    $token = filter_var($_POST["token"], FILTER_SANITIZE_STRING);
 
-    $get_stats_query = "SELECT * FROM `users` WHERE `username`='$username'";
-    $get_stats_result = mysqli_query($conn, $get_stats_query);
-    if (!$get_stats_result || mysqli_num_rows($get_stats_result)!==1){
+    if ($statement = mysqli_prepare($conn, "SELECT * FROM `users` WHERE `id`=?")){
+        mysqli_stmt_bind_param($statement, "i", $id);
+        mysqli_stmt_execute($statement);
+        if ($result = mysqli_stmt_get_result($statement)){
+            $row = mysqli_fetch_assoc($result);
+            if ($row["token"]===$token && $_POST["result"]==="win"){
+                $wins = $row["wins"] + 1;
+            } else if ($row["token"]===$token && $_POST["result"]==="loss"){
+                $losses = $row["losses"] + 1;
+            }
+        } else {
+            mysqli_stmt_close($statement);
+            print(json_encode($output));
+            exit;
+        }
+
+        if ($wins){
+            $update_stats_query = "UPDATE `users` SET `wins`=$wins WHERE `id`=$id";
+        } else if ($losses){
+            $update_stats_query = "UPDATE `users` SET `losses`=$losses WHERE `id`=$id";
+        }
+
+        $update_stats_result = mysqli_query($conn, $update_stats_query);
+        if (!$update_stats_result || mysqli_affected_rows($conn)!==1){
+            mysqli_stmt_close($statement);
+            print(json_encode($output));
+            exit;
+        }
+        $output["success"] = true;
+
+        mysqli_stmt_close($statement);
+        print(json_encode($output));
         exit;
-    }
-
-    $data = mysqli_fetch_assoc($get_stats_result);
-    if ($_POST["result"]==="win"){
-        $current = $data["wins"];
-        $current = $current+1;
-
-        $update_stats_query = "UPDATE `users` SET `wins`=$current WHERE `username`='$username'";
-        $update_stats_result = mysqli_query($conn, $update_stats_query);
-
-        if (!$update_stats_result || mysqli_affected_rows($conn)!==1){
-            exit;
-        }
     } else {
-        $current = $data["losses"];
-        $current = $current+1;
-
-        $update_stats_query = "UPDATE `users` SET `losses`=$current WHERE `username`='$username'";
-        $update_stats_result = mysqli_query($conn, $update_stats_query);
-
-        if (!$update_stats_result || mysqli_affected_rows($conn)!==1){
-            exit;
-        }
-    }
-} else {
-    $get_stats_query = "SELECT * FROM `users` WHERE `username`='$username'";
-    $get_stats_result = mysqli_query($conn, $get_stats_query);
-    if (!$get_stats_result || mysqli_num_rows($get_stats_result)!==1){
-        $output["details"] = "failed query";
         print(json_encode($output));
         exit;
     }
+} else {
+    $username = filter_var($_POST["username"], FILTER_SANITIZE_STRING);
 
-    $data = mysqli_fetch_assoc($get_stats_result);
-    $output["success"] = true;
-    $output["wins"] = $data["wins"];
-    $output["losses"] = $data["losses"];
-    print(json_encode($output));
-    exit;
+    if ($statement = mysqli_prepare($conn, "SELECT * FROM `users` WHERE `username`=?")){
+        mysqli_stmt_bind_param($statement, "s", $username);
+        mysqli_stmt_execute($statement);
+        if ($result = mysqli_stmt_get_result($statement)){
+            $row = mysqli_fetch_assoc($result);
+            $wins = $row["wins"];
+            $losses = $row["losses"];
+
+            $output["success"] = true;
+            $output["wins"] = $wins;
+            $output["losses"] = $losses;
+
+            mysqli_stmt_close($statement);
+            print(json_encode($output));
+            exit;
+        } else {
+            mysqli_stmt_close($statement);
+            print(json_encode($output));
+            exit;
+        }
+    } else {
+        print(json_encode($output));
+        exit;
+    }
 }
 
 ?>

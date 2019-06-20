@@ -3,7 +3,8 @@
 require_once("mysql.php"); //contains $conn, our connection to the database
 
 $output = [
-    "success"=>false
+    "success"=>false, 
+    "details"=>"failed query"
 ];
 if (!$conn){
     $output["details"] = "failed connection";
@@ -11,31 +12,36 @@ if (!$conn){
     exit;
 }
 
-$username = $_POST["username"];
-$password = $_POST["password"];
-    
-$user_query = "SELECT * FROM `users` WHERE `username`='$username'";
-$user_query_result = mysqli_query($conn, $user_query);
+$username = filter_var($_POST["username"], FILTER_SANITIZE_STRING);
+$password = filter_var($_POST["password"], FILTER_SANITIZE_STRING);
 
-if (!$user_query_result){
-    $output["details"] = "failed query";
+if ($statement = mysqli_prepare($conn, "SELECT * FROM `users` WHERE `username`=?")){
+    mysqli_stmt_bind_param($statement, "s", $username);
+    mysqli_stmt_execute($statement);
+    if ($result = mysqli_stmt_get_result($statement)){
+        while ($row = mysqli_fetch_assoc($result)){
+            if ($password===$row["password"]){
+                $output["success"] = true;
+                $output["id"] = $row["id"];
+
+                mysqli_stmt_close($statement);
+                print(json_encode($output));
+                exit;
+            }
+        }
+        $output["details"] = "no sign in";
+
+        mysqli_stmt_close($statement);
+        print(json_encode($output));
+        exit;
+    }
+    mysqli_stmt_close($statement);
     print(json_encode($output));
     exit;
+} else {
+    print(json_encode($output));
+    exit;    
 }
-if (mysqli_num_rows($user_query_result)===0){
-    print(json_encode($output));
-    exit;
-}
-
-$data = mysqli_fetch_assoc($user_query_result);
-if (password_verify($password, $data["password"])){
-    $output["success"] = true;
-    print(json_encode($output));
-    exit;
-} 
-
-print(json_encode($output));
-exit;
 
 ?>
 
