@@ -15,19 +15,19 @@ if (isset($_COOKIE["capture"]) && !empty($_COOKIE["capture"])){
     $arr = explode(":", $_COOKIE["capture"]);
     $id = $arr[0];
     $id = (int)$id;
-    $token = $arr[1];
+    $cookie = $arr[1];
 
     if ($statement = mysqli_prepare($conn, "SELECT * FROM `users` WHERE `id`=?")){
         mysqli_stmt_bind_param($statement, "i", $id);
         mysqli_stmt_execute($statement);
         if ($result = mysqli_stmt_get_result($statement)){
             while ($row = mysqli_fetch_assoc($result)){
-                if ($token===$row["token"]){
-                    $new_token = uniqid("", true);
-                    $token_update_query = "UPDATE `users` SET `token`='$new_token' WHERE `id`=$id";
-                    $token_update_result = mysqli_query($conn, $token_update_query);
+                if ($cookie===$row["cookie"]){
+                    $new_cookie = uniqid("", true);
+                    $update_cookie_query = "UPDATE `users` SET `cookie`='$new_cookie' WHERE `id`=$id";
+                    $update_cookie_result = mysqli_query($conn, $update_cookie_query);
 
-                    if (!$token_update_result || mysqli_affected_rows($conn)!==1){
+                    if (!$update_cookie_result || mysqli_affected_rows($conn)!==1){
                         print(json_encode($output));
                         exit;
                     }
@@ -38,7 +38,10 @@ if (isset($_COOKIE["capture"]) && !empty($_COOKIE["capture"])){
                     ];
                     setcookie("capture", $cookie_value, $options);
 
+                    mysqli_stmt_close($statement);
+
                     $output["success"] = true;
+                    $output["id"] = $id;
                     print(json_encode($output));
                     exit;
                 }
