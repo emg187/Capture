@@ -2,7 +2,8 @@
 
 require_once("mysql.php");
 $output = [
-    "success"=>false
+    "success"=>false, 
+    "details"=>"failed query"
 ];
 if (!$conn){
     $output["details"] = "failed connection";
@@ -10,13 +11,12 @@ if (!$conn){
     exit;
 }
 
-$username = $_POST["username"];
-$password = $_POST["password"];
+$username = filter_var($_POST["username"], FILTER_SANITIZE_STRING);
 
 $get_users_query = "SELECT * FROM `users`";
 $get_users_result = mysqli_query($conn, $get_users_query);
+
 if (!$get_users_result){
-    $output["details"] = "failed query";
     print(json_encode($output));
     exit;
 }
@@ -29,18 +29,29 @@ while ($row = mysqli_fetch_assoc($get_users_result)){
     }
 }
 
+$password = filter_var($_POST["password"], FILTER_SANITIZE_STRING);
 $password = password_hash($password, PASSWORD_BCRYPT);
-$create_user_query = "INSERT INTO `users` (`username`, `password`, `wins`, `losses`)
-                        VALUES ('$username', '$password', 0, 0)";
-$create_user_result = mysqli_query($conn, $create_user_query);
+$token = uniqid("", true);
+$wins = 0;
+$losses = 0;
 
-if (!$create_user_result || mysqli_affected_rows($conn)!==1){
-    $output["details"] = "failed query";
+if ($statement = mysqli_prepare($conn, "INSERT INTO `users` (`username`, `password`, `token`, `wins`, `losses`) VALUES (?, ?, ?, ?, ?)")){
+    mysqli_stmt_bind_param($statement, "sssii", $username, $password, $token, $wins, $losses);
+    mysqli_stmt_execute($statement);
+
+    if (mysqli_affected_rows($conn)!==1){
+        print(json_encode($output));
+        exit;
+    }
+
+    $id = mysqli_insert_id($conn);
+    $output["success"] = true;
+    $output["id"] = $id;
+
+    mysqli_stmt_close($statement);
     print(json_encode($output));
     exit;
 }
-
-$output["success"] = true;
 print(json_encode($output));
 exit;
 

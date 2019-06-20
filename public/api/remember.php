@@ -36,7 +36,9 @@ if ($statement = mysqli_prepare($conn, "SELECT * FROM `users` WHERE `username`=?
             "httponly"=>true
         ];
         setcookie("capture", $cookie_value, $options);
+        mysqli_stmt_close($statement);
     }
+    mysqli_stmt_close($statement);
     print(json_encode($output));
     exit;
 }

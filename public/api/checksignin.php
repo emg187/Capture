@@ -23,6 +23,8 @@ if (isset($_COOKIE["capture"]) && !empty($_COOKIE["capture"])){
         if ($result = mysqli_stmt_get_result($statement)){
             while ($row = mysqli_fetch_assoc($result)){
                 if ($cookie===$row["cookie"]){
+                    $username = $row["username"];
+
                     $new_cookie = uniqid("", true);
                     $update_cookie_query = "UPDATE `users` SET `cookie`='$new_cookie' WHERE `id`=$id";
                     $update_cookie_result = mysqli_query($conn, $update_cookie_query);
@@ -38,10 +40,11 @@ if (isset($_COOKIE["capture"]) && !empty($_COOKIE["capture"])){
                     ];
                     setcookie("capture", $cookie_value, $options);
 
-                    mysqli_stmt_close($statement);
-
                     $output["success"] = true;
+                    $output["username"] = $username;
                     $output["id"] = $id;
+
+                    mysqli_stmt_close($statement);
                     print(json_encode($output));
                     exit;
                 }
@@ -50,6 +53,7 @@ if (isset($_COOKIE["capture"]) && !empty($_COOKIE["capture"])){
             print(json_encode($output));
             exit;
         }
+        mysqli_stmt_close($statement);
         print(json_encode($output));
         exit;
     }
